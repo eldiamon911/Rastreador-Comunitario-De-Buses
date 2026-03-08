@@ -106,6 +106,8 @@ export default {
         draggableWaypoints: false,
         routeWhileDragging: false,
         show: false,
+        itineray: false,
+        collapsible: true,
         createMarker: () => null,
         lineOptions: {
           styles: [{ color: "blue", opacity: 0.7, weight: 5 }],
@@ -175,5 +177,8 @@ export default {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   z-index: 1000;
+}
+.leaflet-routing-container {
+  display: none !important;
 }
 </style>
