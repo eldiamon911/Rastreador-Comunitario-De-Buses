@@ -8,7 +8,7 @@
         </div>
         <div class="botones-confirmar">
             <button class="boton-aceptar" v-on:click="accionAceptar">Aceptar</button>
-            <button class="boton-cancelar">Cancelar</button>
+            <button class="boton-cancelar" v-on:click="accionCancelar">Cancelar</button>
         </div>
     </div>
 </template>
@@ -31,6 +31,9 @@ export default {
             localStorage.setItem('SesionActiva', 'false')
             alert("Ha cerrado sesion")
             this.$router.push("/")
+        },
+        accionCancelar: function(){
+            this.salirCuenta = false
         }
     }
 }
