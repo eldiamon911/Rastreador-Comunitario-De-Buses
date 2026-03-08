@@ -1,4 +1,19 @@
 <template>
+<!-- Fluye aca camilo te voy a poner algo de ayuda como para que se vea el nombre de usuario y correo -->
+     <div class="Datos personales">
+        <div class="contenedor-correo">
+            <h3 class="correo-ver">
+                {{ correoVer }}
+            </h3>
+        </div>
+     </div>
+
+
+
+
+
+
+     <!-- NO tocar esto arriba de esto todo el html ( esto solo modificar con css) -->
     <div class="boton-cs" v-if="!salirCuenta" v-on:click="ConfirmacionCuenta">
         <button class="cerrar_sesion">Cerrar sesion</button>
     </div>
@@ -11,6 +26,7 @@
             <button class="boton-cancelar" v-on:click="accionCancelar">Cancelar</button>
         </div>
     </div>
+
 </template>
 
 <script>
@@ -18,7 +34,8 @@ export default {
     data(){
         return{
             salirCuenta: false,
-            mostrarBotoncs: true
+            mostrarBotoncs: true,
+            correoVer:  localStorage.getItem("correoNuevo"),
         }
     },
     methods: {

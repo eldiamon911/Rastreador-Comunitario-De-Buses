@@ -45,6 +45,8 @@ export default {
         if(this.nuevo_usuario && this.nueva_contrasena && this.nuevo_correo && this.nuevo_nombre){
             localStorage.setItem("usuarioNuevo", this.nuevo_usuario) 
             localStorage.setItem("contrasenaNueva", this.nueva_contrasena)
+            localStorage.setItem("correoNuevo", this.nuevo_correo)
+            localStorage.setItem("nombreNuevo", this.nuevo_nombre)
             alert("registro exitoso")
             this.$router.push("/login") 
         }
