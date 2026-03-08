@@ -24,14 +24,13 @@ data() {
     }
   },
   mounted() {
+    //Aca se revisa si hay una sesion activa cuando se recargue la pagina
     this.verificarSesion();
   },
   methods: {
     Registro: function(){
       this.$router.push("/registro")
     },
-
-    
 
     //parte logica para ocultar el boton de iniciar sesion y dirigir a las vistas (login,perfil)
     MostrarLogin: function(){
