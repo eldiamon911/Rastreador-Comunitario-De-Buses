@@ -13,9 +13,7 @@
         <label>Contraseña:</label>
         <input v-model="validar_contrasena" type="password" placeholder="Ingresa tu contraseña">
       </div>
-
       <br>
-
       <div>
         <button v-on:click="ValidarLogin">Entrar</button>
         <button v-on:click="VolverInicio">Volver al Inicio</button>

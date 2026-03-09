@@ -4,6 +4,9 @@
     <div id="map"></div>
      <!-- Panel de información del bus seleccionado -->
     <div v-if="busSeleccionado" class="panelBus" >
+<div class="contenedor-icono-reportes" v-on:click="irAReportes" v-show="confirmarSesionMapa">
+  <i class='bx bx-chat'></i>  
+</div>
       <h2>🚌 Bus {{ busSeleccionado.ruta }}</h2>
       <p><b>Conductor:</b> {{ busSeleccionado.conductor }}</p>
       <p><b>Placa:</b> {{ busSeleccionado.placa }}</p>
@@ -86,6 +89,10 @@ export default {
     this.map.on("locationerror", () => alert("No se pudo obtener tu ubicación. Activa el GPS."));
   },
   methods: {
+    irAReportes: function(){
+      this.$router.push("/reportes")
+    },
+    //Guarda la ruta
     guardarRuta: function(){
       const nombreAsignado = prompt("¿Como quieres que se llame esta ruta?")
       if (nombreAsignado && nombreAsignado.trim() !== "") {
@@ -110,6 +117,7 @@ export default {
         this.rutaActiva = null;
       }
     },
+
     // metodo para mostrar la ruta del bus seleccionado en el mapa utilizando Leaflet Routing Machine
     mostrarRuta(ruta) {
       const coordenadas = ruta.puntos.map(p => L.latLng(p[0], p[1]));
