@@ -30,7 +30,7 @@ export default {
       capaRutas: null,
       rutaActiva: null,
       intervalosBuses: [],
-      confirmarSesionMapa: localStorage.getItem('verificarGuardarRuta')
+      confirmarSesionMapa: localStorage.getItem('verificarGuardarRuta') === 'true'
     };
   },
   mounted() {
@@ -40,6 +40,7 @@ export default {
       maxBounds: santaMartaBounds,
       maxBoundsViscosity: 1.0,
       minZoom: 12,
+      zoomAnimation: false,
     }).setView([11.2408, -74.1990], 13);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
@@ -75,7 +76,9 @@ export default {
     });
 
     // Ubicación usuario
-    this.map.locate({ setView: true, maxZoom: 16 });
+    if(this.map){
+      this.map.locate({ setView: true, maxZoom: 16 });
+    }
     this.map.on("locationfound", e => {
       L.marker(e.latlng).addTo(this.map).bindPopup("Tú estás aquí 📍").openPopup();
       L.circle(e.latlng, { radius: e.accuracy }).addTo(this.map);
@@ -85,7 +88,7 @@ export default {
   methods: {
     guardarRuta: function(){
       const nombreAsignado = prompt("¿Como quieres que se llame esta ruta?")
-      if (nombreAsignado!==""){
+      if (nombreAsignado && nombreAsignado.trim() !== "") {
         const almacenarRutas= {
           id: Date.now(),
           nombreRuta: nombreAsignado,
@@ -103,7 +106,7 @@ export default {
     cerrarPanel() {
       this.busSeleccionado = null;
       if (this.rutaActiva) {
-        this.map.removeControl(this.rutaActiva);
+        this.rutaActiva.remove();
         this.rutaActiva = null;
       }
     },
@@ -112,7 +115,8 @@ export default {
       const coordenadas = ruta.puntos.map(p => L.latLng(p[0], p[1]));
 
       if(this.rutaActiva){
-        this.map.removeControl(this.rutaActiva);
+        this.rutaActiva.remove();
+        this.rutaActiva = null;
       }
 
       this.rutaActiva = L.Routing.control({
@@ -151,21 +155,50 @@ export default {
 
           const coordenadas = routes[0].coordinates;
 
-          let index = 0;
+          let segmento = 0;
+          let progreso = 0;
+
+          const velocidad = 0.01; // velocidad del bus
+
           // Animar el bus moviendo el marcador a lo largo de las coordenadas de la ruta cada 1.2 segundos
           const intervalo = setInterval(() => {
-            const actual = coordenadas[index];
-            const siguiente = coordenadas[(index + 1) % coordenadas.length];
 
-            marker.setLatLng([actual.lat, actual.lng]);
+            if (!this.map) return;
+            if (!marker) return;
 
+            const actual = coordenadas[segmento];
+            const siguiente = coordenadas[(segmento + 1) % coordenadas.length];
+
+            if (!actual || !siguiente) {
+              segmento = 0;
+              progreso = 0;
+              return;
+            }
+
+            //Interpolacion entre puntos para un movimiento suave del bus
+            const lat = actual.lat + (siguiente.lat - actual.lat) * progreso;
+            const lng = actual.lng + (siguiente.lng - actual.lng) * progreso;
+            marker.setLatLng([lat, lng]);
+
+            //rotacion del marcador para que apunte en la dirección del movimiento
             const dx = siguiente.lng - actual.lng;
             const dy = siguiente.lat - actual.lat;
 
             const angulo = Math.atan2(dy, dx) * (180 / Math.PI);
             marker.setRotationAngle(angulo);
-            index = (index + 1) % coordenadas.length;
-          }, 200);
+
+            progreso += velocidad;
+
+            if(progreso >= 1) {
+              progreso = 0;
+              segmento ++;
+            }
+
+            if (segmento >= coordenadas.length - 1) {
+              segmento = 0;
+            }
+
+          }, 50);
           this.intervalosBuses.push(intervalo);
         }
       );
@@ -174,6 +207,13 @@ export default {
   // metodo para limpiar los intervalos de animación de los buses cuando el componente se desmonta para evitar fugas de memoria
   beforeUnmount() {
     this.intervalosBuses.forEach(i => clearInterval(i));
+    this.intervalosBuses = [];
+
+    if(this.map){
+      this.map.off();
+      this.map.remove();
+      this.map = null;
+    }
   },
 };
 </script>
@@ -183,20 +223,83 @@ export default {
 #map {
   height: 500px;
   width: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 3px solid #1e40af;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.contenedor {
+  background: #f8fbff;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+h1{
+  color: #0f2a44;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
 }
 
 .panelBus {
   position: absolute;
   top: 120px;
   right: 20px;
-  width: 250px;
+  width: 260px;
   background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 18px;
+  border-radius: 12px;
+  border-top: 5px solid #2563eb;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
 .leaflet-routing-container {
   display: none !important;
+}
+
+.panelBus h2 {
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.panelBus p {
+  color: #334155;
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.panelBus button {
+  width: 100%;
+  margin-top: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.panelBus button:hover {
+  background: #1e40af;
+}
+
+.panelBus button:last-child {
+  background: #facc15;
+  color: #1e293b;
+}
+
+.panelBus button:last-child:hover {
+  background: #eab308;
+}
+
+.leaflet-tooltip {
+  background: #1e40af;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 4px 8px;
 }
 </style>
