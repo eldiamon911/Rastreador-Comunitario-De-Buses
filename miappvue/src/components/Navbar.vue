@@ -1,4 +1,15 @@
 <template>
+
+<div class="header-superior"> 
+  <span>📢 ¡Pronto ha llegado a Santa Marta, consulta la ubicación de tu bus en tiempo real!</span>
+</div>
+
+<header class="header-principal">  
+
+  <div class="logo">
+    <img src="" alt="logo" class="Logo">
+  </div>
+
   <nav class="contenedor-menu">
     <!-- CAMILO2 -- Puse nuevos links que funcionan mediante botones y simplemente pase el componente del menu
      a este(dejare el componente del menuComponente por si acaso) -->
@@ -10,24 +21,34 @@
     <router-link to="/registro" class="router-registro">
       <button v-if="!logueado" class="boton-registro">Registrarse</button>
     </router-link>
+
     <!-- Menu rayitas para que dentro pueda interacturar con su perfil y administrar sus rutas jijiji -->
     <section class="menu-rayitas">
+
         <div class="menu-hamburguesa" v-if="logueado" v-on:click="mostrarMenuHmburguesa">
             <i class='bx bx-menu'></i>
         </div>
+
         <div class="menuDesplegable">
+
         <router-link to="/perfil" v-show="contenidoMenu">
           <ul v-on:click="mostrarMenuHmburguesa">Perfil</ul>
         </router-link>
+
         <router-link to="/administrarRutas" v-show="contenidoMenu">
           <ul v-on:click="mostrarMenuHmburguesa">
             administrar rutas
           </ul>
         </router-link>
+
         </div>
 
     </section>
-</nav>
+
+  </nav>
+
+</header>
+
 </template>
 
 <script>
@@ -80,30 +101,110 @@ export default {
   } 
 } 
 </script>
+
+
 <style>
 
-/*CAMILO2 --- Compañero camilo aca tienes que reducir el menu ese porque como puedes ver ocupa todo el ancho
-(no me aguante y puse eso, disculpame camilo)
-*/
-/* debes de ajustar la altura del menu porque si no es un caos, la barrita de hamburguesa tambien debes de 
-ponerla del lado derecho */
-.menu-hamburguesa{
-  border: 2px solid black;
+* {
+  margin: 0;
   padding: 0;
-  margin: 0;  
-  position: relative;
-  right: px;
-}
-.contenedor-menu{
-display: flex;
-align-items: center;
-
+  box-sizing:border-box;
 }
 
-.menuDesplegable{  
-  /* camilo si quitas esto el navbar se agranda tambien */
-  position: absolute;
+.header-superior {     /* Este es el header superior, es la parte donde se agrega publicidad (CELEDÓN)*/
+  background:#2563eb; 
+  color:white; 
+  font-size:15px; 
+  text-align:center; 
+  padding:8px 0;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
+.header-principal {    /* Este es el header principal, donde van las opciones de navegación (CELEDÓN)*/
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#1e3a8a;
+  padding:28px 90px;
+  box-shadow:0px 3px 10px rgba(0,0,0,0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logo {
+  display:flex;
+  align-items:center;
+}
+
+.logo-img {
+  width:2px;
+  height:2px;
+  margin-right:10px;
+}
+
+.contenedor-menu {
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.contenedor-menu a {
+  color:white;
+  text-decoration:none;
+  font-size:16px;
+  transition:0.3s;
+}
+
+.contenedor-menu a:hover {
+  color:#60a5fa;
+}
+
+.boton-sesion {
+  background:#2563eb;
+  border:none;
+  padding:6px 12px;
+  border-radius:5px;
+  color:white;
+  cursor:pointer;
+}
+
+.boton-registro {
+  background:#10b981;
+  border:none;
+  padding:6px 12px;
+  border-radius:5px;
+  color:white;
+  cursor:pointer;
+}
+
+.menu-rayitas {
+  position:relative;
+}
+
+.menu-hamburguesa {
+  font-size:26px;
+  color:white;
+  cursor:pointer;
+}
+
+.menuDesplegable {
+  position:absolute;
+  right:0;
+  top:35px;
+  background:white;
+  border-radius:6px;
+  box-shadow:0px 5px 10px rgba(0,0,0,0.15);
+  padding:10px;
+}
+
+.menuDesplegable u l{
+  list-style:none;
+  padding:5px 10px;
+  cursor:pointer;  
+}
+
+.menuDesplegable ul:hover {
+  background:#f1f5f9;
 }
 
 </style>

@@ -136,6 +136,8 @@ export default {
         draggableWaypoints: false,
         routeWhileDragging: false,
         show: false,
+        itineray: false,
+        collapsible: true,
         createMarker: () => null,
         lineOptions: {
           styles: [{ color: "blue", opacity: 0.7, weight: 5 }],
@@ -260,6 +262,9 @@ h1{
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
+.leaflet-routing-container {
+  display: none !important;
+}
 
 .panelBus h2 {
   color: #1e3a8a;
@@ -301,7 +306,7 @@ h1{
   background: #1e40af;
   color: white;
   border: none;
-  font-family: bold;
+  font-weight: bold;
   border-radius: 6px;
   padding: 4px 8px;
 }

@@ -7,9 +7,11 @@
 
 <script>
 import AppNavbar from './components/Navbar.vue'
+
 export default {
   components: {
     AppNavbar
   }
 }
+
 </script>
