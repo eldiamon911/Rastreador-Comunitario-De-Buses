@@ -1,12 +1,14 @@
 <template>
 
-<header class="header-principal">
+<div class="header-superior"> 
+  <span>📢 ¡Pronto ha llegado a Santa Marta, consulta la ubicación de tu bus en tiempo real!</span>
+</div>
 
-  <!-- Logo y nombre del proyecto -->
+<header class="header-principal">  
+
   <div class="logo">
     <img src="" alt="logo" class="Logo">
   </div>
-  
 
   <nav class="contenedor-menu">
     <!-- CAMILO2 -- Puse nuevos links que funcionan mediante botones y simplemente pase el componente del menu
@@ -99,69 +101,65 @@ export default {
   } 
 } 
 </script>
+
+
 <style>
 
-/*CAMILO2 --- Compañero camilo aca tienes que reducir el menu ese porque como puedes ver ocupa todo el ancho
-(no me aguante y puse eso, disculpame camilo)
-*/
-/* debes de ajustar la altura del menu porque si no es un caos, la barrita de hamburguesa tambien debes de 
-ponerla del lado derecho */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing:border-box;
+}
 
+.header-superior {     /* Este es el header superior, es la parte donde se agrega publicidad (CELEDÓN)*/
+  background:#2563eb; 
+  color:white; 
+  font-size:15px; 
+  text-align:center; 
+  padding:8px 0;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-
-
-/* HEADER PRINCIPAL */
-
-.header-principal{
+.header-principal {    /* Este es el header principal, donde van las opciones de navegación (CELEDÓN)*/
   display:flex;
   justify-content:space-between;
   align-items:center;
   background:#1e3a8a;
-  padding:12px 40px;
+  padding:28px 90px;
   box-shadow:0px 3px 10px rgba(0,0,0,0.15);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
-/* LOGO */
-
-.logo{
+.logo {
   display:flex;
   align-items:center;
 }
 
-.logo-img{
+.logo-img {
   width:2px;
   height:2px;
   margin-right:10px;
 }
 
-
-
-
-/* MENU */
-
-.contenedor-menu{
+.contenedor-menu {
   display:flex;
   align-items:center;
   gap:15px;
 }
 
-.contenedor-menu a{
+.contenedor-menu a {
   color:white;
   text-decoration:none;
   font-size:16px;
   transition:0.3s;
 }
 
-.contenedor-menu a:hover{
+.contenedor-menu a:hover {
   color:#60a5fa;
 }
 
-
-/* BOTONES */
-
-.boton-sesion{
+.boton-sesion {
   background:#2563eb;
   border:none;
   padding:6px 12px;
@@ -170,7 +168,7 @@ ponerla del lado derecho */
   cursor:pointer;
 }
 
-.boton-registro{
+.boton-registro {
   background:#10b981;
   border:none;
   padding:6px 12px;
@@ -179,20 +177,17 @@ ponerla del lado derecho */
   cursor:pointer;
 }
 
-
-/* MENU HAMBURGUESA */
-
-.menu-rayitas{
+.menu-rayitas {
   position:relative;
 }
 
-.menu-hamburguesa{
+.menu-hamburguesa {
   font-size:26px;
   color:white;
   cursor:pointer;
 }
 
-.menuDesplegable{
+.menuDesplegable {
   position:absolute;
   right:0;
   top:35px;
@@ -202,13 +197,13 @@ ponerla del lado derecho */
   padding:10px;
 }
 
-.menuDesplegable ul{
+.menuDesplegable u l{
   list-style:none;
   padding:5px 10px;
-  cursor:pointer;
+  cursor:pointer;  
 }
 
-.menuDesplegable ul:hover{
+.menuDesplegable ul:hover {
   background:#f1f5f9;
 }
 
