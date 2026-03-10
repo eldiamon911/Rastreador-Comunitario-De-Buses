@@ -1,9 +1,27 @@
 <template>
   <div class="contenedor">
     <h1>Mapa en tiempo real</h1>
+    <div class="stats">
+
+  <div class="mini-card" v-on:click="mostrarBusesActivos">
+    <div class="icon">🚌</div>
+    <h2>{{cantidadBuses}}</h2>
+    <p>Buses activos</p>
+  </div>
+
+  <div class="mini-card" v-on:click="mostrarBusesActivos">
+    <div class="icon">🗺</div>
+    <h2>{{cantidadBuses}}</h2>
+    <p>Rutas disponibles</p>
+  </div>
+
+</div>
     <div id="map"></div>
      <!-- Panel de información del bus seleccionado -->
     <div v-if="busSeleccionado" class="panelBus" >
+<div class="contenedor-icono-reportes" v-on:click="irAReportes" v-show="confirmarSesionMapa">
+  <i class='bx bx-chat'></i>  
+</div>
       <h2>🚌 Bus {{ busSeleccionado.ruta }}</h2>
       <p><b>Conductor:</b> {{ busSeleccionado.conductor }}</p>
       <p><b>Placa:</b> {{ busSeleccionado.placa }}</p>
@@ -30,7 +48,9 @@ export default {
       capaRutas: null,
       rutaActiva: null,
       intervalosBuses: [],
-      confirmarSesionMapa: localStorage.getItem('verificarGuardarRuta') === 'true'
+      confirmarSesionMapa: localStorage.getItem('verificarGuardarRuta') === 'true',
+      cantidadBuses: buses.length
+      
     };
   },
   mounted() {
@@ -86,6 +106,13 @@ export default {
     this.map.on("locationerror", () => alert("No se pudo obtener tu ubicación. Activa el GPS."));
   },
   methods: {
+    mostrarBusesActivos: function(){
+      this.$router.push("/busesActivos")
+    },
+    irAReportes: function(){
+      this.$router.push("/reportes")
+    },
+    //Guarda la ruta
     guardarRuta: function(){
       const nombreAsignado = prompt("¿Como quieres que se llame esta ruta?")
       if (nombreAsignado && nombreAsignado.trim() !== "") {
@@ -110,6 +137,7 @@ export default {
         this.rutaActiva = null;
       }
     },
+
     // metodo para mostrar la ruta del bus seleccionado en el mapa utilizando Leaflet Routing Machine
     mostrarRuta(ruta) {
       const coordenadas = ruta.puntos.map(p => L.latLng(p[0], p[1]));
@@ -218,7 +246,41 @@ export default {
 };
 </script>
 
-<style scoped>  
+<style scoped>
+.stats{
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin: 20px 0;
+}
+
+.mini-card{
+  width: 300px;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(12, 65, 190, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.mini-card:hover{
+  transform: translateY(-5px);
+}
+
+.icon{
+  font-size: 28px;
+}
+
+.mini-card h2{
+  font-size: 28px;
+  margin: 5px 0;
+}
+
+.mini-card p{
+  font-size: 14px;
+  color: #555;
+}
 /* estilos para el mapa y el panel de información del bus */
 #map {
   height: 500px;
@@ -236,7 +298,7 @@ export default {
 }
 
 h1{
-  color: #0f2a44;
+  color: #0f4413;
   text-align: center;
   margin-bottom: 20px;
   font-weight: 600;

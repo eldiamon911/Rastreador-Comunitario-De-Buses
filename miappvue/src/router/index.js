@@ -7,6 +7,8 @@ import DashboardView from "../views/DashboardView.vue"
 import PerfilView from "@/views/PerfilView.vue"
 import RegistroView from "@/views/RegistroView.vue"
 import MostrarRutasView from "@/views/MostrarRutasView.vue"
+import ReportesView from "@/views/ReportesView.vue"
+import BusesActivosView from "@/views/BusesActivosView.vue"
 
 
 const routes = [
@@ -17,6 +19,9 @@ const routes = [
   { path: "/perfil", component: PerfilView },
   { path: "/registro", component: RegistroView },
   { path: "/administrarRutas", component: MostrarRutasView },
+  { path: "/reportes", component: ReportesView },
+  { path: "/busesActivos", component: BusesActivosView },
+
 
 ]
 
