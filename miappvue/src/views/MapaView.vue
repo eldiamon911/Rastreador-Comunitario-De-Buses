@@ -55,18 +55,18 @@ export default {
   },
   mounted() {
     // Centrar el mapa en Santa Marta
-    const santaMartaBounds = L.latLngBounds([11.05, -74.30], [11.33, -74.05]);
+    const santaMartaBounds = L.latLngBounds([11.00, -74.28], [11.32, -74.12]);
     this.map = L.map("map", {
       maxBounds: santaMartaBounds,
-      maxBoundsViscosity: 1.0,
-      minZoom: 12,
+      maxBoundsViscosity: 0.9,
+      minZoom: 11,
       zoomAnimation: false,
-    }).setView([11.2408, -74.1990], 13);
+    }).setView([11.18, -74.21], 12);
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      attribution: "© OpenStreetMap & CARTO",
-      subdomains: "abcd",
-      maxZoom: 20,
+    //Mapa nuevo actualizado con tiles de Esri para mejor rendimiento y apariencia
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+      attribution: "Tiles Esri",
+      maxZoom: 19,
     }).addTo(this.map);
 
     this.capaRutas = L.layerGroup().addTo(this.map);
@@ -156,11 +156,11 @@ export default {
         draggableWaypoints: false,
         routeWhileDragging: false,
         show: false,
-        itineray: false,
+        itinerary: false,
         collapsible: true,
         createMarker: () => null,
         lineOptions: {
-          styles: [{ color: "blue", opacity: 0.7, weight: 5 }],
+          styles: [{ color: "#1d4ed8", opacity: 0.95, weight: 6}],
         },
       }).addTo(this.map);
     },
@@ -186,7 +186,7 @@ export default {
           let segmento = 0;
           let progreso = 0;
 
-          const velocidad = 0.01; // velocidad del bus
+          const velocidad = 0.0025; // velocidad del bus
 
           // Animar el bus moviendo el marcador a lo largo de las coordenadas de la ruta cada 1.2 segundos
           const intervalo = setInterval(() => {
@@ -226,7 +226,7 @@ export default {
               segmento = 0;
             }
 
-          }, 50);
+          }, 30);
           this.intervalosBuses.push(intervalo);
         }
       );
