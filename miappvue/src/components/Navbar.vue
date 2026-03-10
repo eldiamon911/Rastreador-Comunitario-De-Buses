@@ -47,9 +47,20 @@
 
 </header>
 
-  <div class="franja-publicitaria"> 
-    <span>¡Pronto ha llegado a Santa Marta, consulta la ubicación de tu bus en tiempo real!</span>
-  </div>
+  <div class="texto-rodante">
+    <span>
+      ¡Pronto llegó a Santa Marta, consulta la ubicación de tus bus en tiempo real!ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+      La información que necesitas para moverte está ahora en un solo lugarㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+      La movilidad en Santa Marta ahora es más inteligenteㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+      Optimiza tu tiempo y reduce la espera en las paradasㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+      ¡Pronto llegó a Santa Marta, consulta la ubicación de tus bus en tiempo real!ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+      La información que necesitas para moverte está ahora en un solo lugarㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+      La movilidad en Santa Marta ahora es más inteligenteㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+      Optimiza tu tiempo y reduce la espera en las paradasㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+    </span>
+</div>
+
+
 
 </template>
 
@@ -102,7 +113,7 @@ export default {
 
 <style>
 
-* {
+* {                    /* Body aquí (CELEDÓN)*/
   margin: 0;
   padding: 0;
   box-sizing:border-box;
@@ -135,15 +146,48 @@ export default {
   cursor: pointer;
 }
 
-.franja-publicitaria {     /* Esta es la franja debajo del header, es la parte donde se agrega publicidad (CELEDÓN)*/
-  background:#1387d4; 
-  color:white; 
-  font-size:15px; 
-  text-align:center; 
-  padding:8px 0;
-  font-weight: bold;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.texto-rodante {
+    width: 100%;
+    margin: auto;
+    overflow: hidden;            
+    white-space: nowrap;         
+    box-sizing: border-box;
+    color: white;
+    background-color:#1387d4;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    padding: 8px 0;
 }
+
+.texto-rodante span {
+    display: inline-block;
+    padding-left: 100%;         
+    animation: mover 60s linear infinite; 
+}
+
+@keyframes mover {                       /* Esto es del texto azul claro rodante, justo debajo del header (CELEDÓN)*/
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+
+
+
+
 
 .contenedor-menu {
   display:flex;
@@ -212,5 +256,7 @@ export default {
 .menuDesplegable ul:hover {
   background:#f1f5f9;
 }
+
+
 
 </style>
