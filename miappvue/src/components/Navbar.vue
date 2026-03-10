@@ -14,7 +14,6 @@
     <!-- CAMILO2 -- Puse nuevos links que funcionan mediante botones y simplemente pase el componente del menu
      a este(dejare el componente del menuComponente por si acaso) -->
     <router-link to="/">Inicio</router-link> |
-    <router-link to="/mapa" v-on:click="validacionSesionMapa">Mapa</router-link> |
     <router-link to="/login">
       <button class="boton-sesion" v-if="!logueado">Iniciar sesion</button>
     </router-link>
@@ -80,15 +79,7 @@ export default {
         this.logueado = false;
       }
     },
-      validacionSesionMapa: function(){
-      const validarSesionActiva = localStorage.getItem('SesionActiva')
-      if(validarSesionActiva == 'true'){
-        localStorage.setItem('verificarGuardarRuta','true')
-      }
-      else{
-        localStorage.setItem('verificarGuardarRuta','false')
-      }
-    },
+      
     //Aca es para cuando toque las tres rayitas se muestre el contenido
     mostrarMenuHmburguesa: function(){
       if(this.contenidoMenu === false){
