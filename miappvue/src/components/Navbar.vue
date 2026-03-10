@@ -6,20 +6,21 @@
 
 <header class="header-principal">  
 
-  <div class="logo">
-    <img src="" alt="logo" class="Logo">
+  <div class="logo" v-on:click="volverInicio">
+    <img src="assets/tipografia-pronto.png" alt="" class="Logo" >
   </div>
 
   <nav class="contenedor-menu">
     <!-- CAMILO2 -- Puse nuevos links que funcionan mediante botones y simplemente pase el componente del menu
      a este(dejare el componente del menuComponente por si acaso) -->
-    <router-link to="/">Inicio</router-link> |
+      
     <router-link to="/login">
       <button class="boton-sesion" v-if="!logueado">Iniciar sesion</button>
     </router-link>
     <router-link to="/registro" class="router-registro">
       <button v-if="!logueado" class="boton-registro">Registrarse</button>
     </router-link>
+
 
     <!-- Menu rayitas para que dentro pueda interacturar con su perfil y administrar sus rutas jijiji -->
     <section class="menu-rayitas">
@@ -70,6 +71,9 @@ export default {
     }
   },
   methods: { 
+    volverInicio: function(){
+      this.$router.push("/")
+    },
     //funcion para el mounted y watch
     verificarSesion() {
       const mostrador = localStorage.getItem('SesionActiva');
@@ -100,6 +104,10 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing:border-box;
+}
+.opciones-informativas{
+  display: flex;
+  gap: 20px;
 }
 
 .header-superior {     /* Este es el header superior, es la parte donde se agrega publicidad (CELEDÓN)*/
