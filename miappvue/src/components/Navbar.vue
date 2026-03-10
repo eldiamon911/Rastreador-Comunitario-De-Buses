@@ -1,13 +1,25 @@
 <template>
 
-<div class="header-superior"> 
-  <span>📢 ¡Pronto ha llegado a Santa Marta, consulta la ubicación de tu bus en tiempo real!</span>
-</div>
-
 <header class="header-principal">  
 
+  <div class="menuDesplegable">
+      <router-link to="/perfil" v-show="contenidoMenu">
+        <ul v-on:click="mostrarMenuHmburguesa">Perfil</ul>
+      </router-link>
+      <router-link to="/administrarRutas" v-show="contenidoMenu">
+        <ul v-on:click="mostrarMenuHmburguesa">
+          Administrar rutas
+        </ul>
+      </router-link>
+  </div>
+
+  <div class="menu-hamburguesa" v-if="logueado" v-on:click="mostrarMenuHmburguesa">
+            <i class='bx bx-menu'></i>
+        </div>
+
   <div class="logo" v-on:click="volverInicio">
-    <img src="assets/tipografia-pronto.png" alt="" class="Logo" >
+    <img class="logo-icono" src="../assets/logo-bus.png" alt="Logo bus">
+    <img class="logo-texto" src="../assets/tipografia-pronto.png" alt="Tipografia">
   </div>
 
   <nav class="contenedor-menu">
@@ -25,29 +37,19 @@
     <!-- Menu rayitas para que dentro pueda interacturar con su perfil y administrar sus rutas jijiji -->
     <section class="menu-rayitas">
 
-        <div class="menu-hamburguesa" v-if="logueado" v-on:click="mostrarMenuHmburguesa">
-            <i class='bx bx-menu'></i>
-        </div>
+        
 
-        <div class="menuDesplegable">
-
-        <router-link to="/perfil" v-show="contenidoMenu">
-          <ul v-on:click="mostrarMenuHmburguesa">Perfil</ul>
-        </router-link>
-
-        <router-link to="/administrarRutas" v-show="contenidoMenu">
-          <ul v-on:click="mostrarMenuHmburguesa">
-            administrar rutas
-          </ul>
-        </router-link>
-
-        </div>
+       
 
     </section>
 
   </nav>
 
 </header>
+
+  <div class="franja-publicitaria"> 
+    <span>¡Pronto ha llegado a Santa Marta, consulta la ubicación de tu bus en tiempo real!</span>
+  </div>
 
 </template>
 
@@ -105,40 +107,42 @@ export default {
   padding: 0;
   box-sizing:border-box;
 }
-.opciones-informativas{
-  display: flex;
-  gap: 20px;
-}
-
-.header-superior {     /* Este es el header superior, es la parte donde se agrega publicidad (CELEDÓN)*/
-  background:#2563eb; 
-  color:white; 
-  font-size:15px; 
-  text-align:center; 
-  padding:8px 0;
-  font-weight: bold;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 
 .header-principal {    /* Este es el header principal, donde van las opciones de navegación (CELEDÓN)*/
   display:flex;
   justify-content:space-between;
   align-items:center;
   background:#1e3a8a;
-  padding:28px 90px;
+  padding:16px 90px;
   box-shadow:0px 3px 10px rgba(0,0,0,0.15);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .logo {
-  display:flex;
-  align-items:center;
+  display: flex;
+  align-items: center;
 }
 
-.logo-img {
-  width:2px;
-  height:2px;
-  margin-right:10px;
+.logo-icono {
+  height: 75px;
+  margin-right: 5px;
+  transform: translateY(-5px);      /* baja 5px */
+  cursor: pointer;
+}
+
+.logo-texto {
+  height: 52px;
+  cursor: pointer;
+}
+
+.franja-publicitaria {     /* Esta es la franja debajo del header, es la parte donde se agrega publicidad (CELEDÓN)*/
+  background:#1387d4; 
+  color:white; 
+  font-size:15px; 
+  text-align:center; 
+  padding:8px 0;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .contenedor-menu {
