@@ -1,7 +1,7 @@
 <template>
 
 <header class="header-principal">  
-
+  
   <div class="menu-hamburguesa"  v-on:click="mostrarMenuHmburguesa">
             <i class='bx bx-menu'></i>
 
@@ -33,13 +33,8 @@
       <button v-if="!logueado" class="boton-registro">Registrarse</button>
     </router-link>
 
-
     <!-- Menu rayitas para que dentro pueda interacturar con su perfil y administrar sus rutas jijiji -->
     <section class="menu-rayitas">
-
-        
-
-       
 
     </section>
 
@@ -135,16 +130,12 @@ export default {
   padding: 0;
   box-sizing:border-box;
 }
-.texto-info{
-  color: black;
-}
 
 .header-principal {    /* Este es el header principal, donde van las opciones de navegación (CELEDÓN)*/
   display:flex;
-  justify-content:space-between;
   align-items:center;
   background:#1e3a8a;
-  padding:16px 90px;
+  padding:6px 90px;
   box-shadow:0px 3px 10px rgba(0,0,0,0.15);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -152,11 +143,11 @@ export default {
 .logo {
   display: flex;
   align-items: center;
+  margin-left: 35px;
 }
 
 .logo-icono {
   height: 75px;
-  margin-right: 5px;
   transform: translateY(-5px);      /* baja 5px */
   cursor: pointer;
 }
@@ -213,6 +204,7 @@ export default {
  background-color: #ffd500;
  color: black;
  cursor: pointer;
+ margin-left: 800px;
 }
 
 .boton-registro {
@@ -256,6 +248,8 @@ export default {
   background:#f1f5f9;
 }
 
-
+.texto-info{
+  color: black;
+}
 
 </style>
