@@ -60,3 +60,15 @@ export default {
   
 }
 </script>
+
+<style scoped>
+
+.footer {
+    background-color: #1e3a8a;
+    color: #bbb;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 20px 20px;
+   
+}
+
+</style>
