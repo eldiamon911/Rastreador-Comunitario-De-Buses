@@ -2,18 +2,18 @@
 
 <header class="header-principal">  
 
-  <div class="menu-hamburguesa" v-if="logueado" v-on:click="mostrarMenuHmburguesa">
+  <div class="menu-hamburguesa"  v-on:click="mostrarMenuHmburguesa">
             <i class='bx bx-menu'></i>
 
             <div class="menuDesplegable" v-show="contenidoMenu">
       <router-link to="/perfil" >
         <ul v-on:click="mostrarMenuHmburguesa">Perfil</ul>
       </router-link>
-      <router-link to="/administrarRutas" v-show="contenidoMenu">
-        <ul v-on:click="mostrarMenuHmburguesa">
+      <div  v-on:click="ejecuarValidacion" v-show="contenidoMenu">
+        <ul v-on:click="mostrarMenuHmburguesa" class="texto-info">
           Administrar rutas
         </ul>
-      </router-link>
+      </div>
   </div>
         </div>
 
@@ -76,6 +76,14 @@ export default {
     volverInicio: function(){
       this.$router.push("/")
     },
+    ejecuarValidacion: function(){
+      if(this.logueado === true){
+        this.$router.push("/administrarRutas")
+      }
+      else{
+        this.$router.push("/login")
+      }
+    },
     //funcion para el mounted y watch
     verificarSesion() {
       const mostrador = localStorage.getItem('SesionActiva');
@@ -106,6 +114,9 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing:border-box;
+}
+.texto-info{
+  color: black;
 }
 
 .header-principal {    /* Este es el header principal, donde van las opciones de navegación (CELEDÓN)*/
