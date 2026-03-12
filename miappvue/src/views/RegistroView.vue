@@ -30,9 +30,11 @@
 </template>
 
 <script >
+
 export default {
   data(){
     return{
+
         nuevo_usuario: "",
         nuevo_correo: "",
         nuevo_nombre: "",
@@ -43,12 +45,24 @@ export default {
     //registra el usuario y lo guarda en el localstrorege, tambien validamos que ingresen todos los datos
     RegistrarUsuario: function(){
         if(this.nuevo_usuario && this.nueva_contrasena && this.nuevo_correo && this.nuevo_nombre){
-            localStorage.setItem("usuarioNuevo", this.nuevo_usuario) 
-            localStorage.setItem("contrasenaNueva", this.nueva_contrasena)
-            localStorage.setItem("correoNuevo", this.nuevo_correo)
-            localStorage.setItem("nombreNuevo", this.nuevo_nombre)
-            alert("registro exitoso")
-            this.$router.push("/login") 
+          let usuriosNuevosLista = JSON.parse(localStorage.getItem("usurio_sistema")) || []
+          const nuevosUsuarios = {
+            usuario: this.nuevo_usuario,
+            correo: this.nuevo_correo,
+            nombre: this.nuevo_nombre,
+            contrasena: this.nueva_contrasena,
+          } 
+
+          const usuarioExistente =  usuriosNuevosLista.find( us => us.usuario === nuevosUsuarios.usuario);
+          if(usuarioExistente){
+            alert("Ya se registraron con este usuario");
+          }
+
+          usuriosNuevosLista.push(nuevosUsuarios);
+          localStorage.setItem("usurio_sistema", JSON.stringify(usuriosNuevosLista))
+          alert("Se registro correctamente")
+          this.$router.push("/login")
+
         }
         else{
             alert("Llene todos los campos")

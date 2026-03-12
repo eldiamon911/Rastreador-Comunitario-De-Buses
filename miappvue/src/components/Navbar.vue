@@ -2,15 +2,15 @@
 
 <header class="header-principal">  
   
-  <div class="menu-hamburguesa"  v-on:click="mostrarMenuHmburguesa">
-            <i class='bx bx-menu'></i>
+  <div class="menu-hamburguesa" >
+            <i class='bx bx-menu' v-on:click="mostrarMenuHmburguesa"></i>
 
             <div class="menuDesplegable" v-show="contenidoMenu">
         <div v-on:click="ejecuarValidacionPerfil" >
-        <ul v-on:click="mostrarMenuHmburguesa" class="texto-info">Perfil</ul>
+        <ul  class="texto-info">Perfil</ul>
         </div>
       <div  v-on:click="ejecuarValidacion" v-show="contenidoMenu">
-        <ul v-on:click="mostrarMenuHmburguesa" class="texto-info">
+        <ul class="texto-info">
           Administrar rutas
         </ul>
       </div>
@@ -76,6 +76,7 @@ export default {
     //ejecuta cada vez que cambia de pestaña (ME tenia loco esta parte)
     $route() {
       this.verificarSesion();
+      this.contenidoMenu = false
     }
   },
   methods: { 

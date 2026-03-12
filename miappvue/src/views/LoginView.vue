@@ -29,22 +29,28 @@ export default {
     return{
       validar_contrasena: "",
       validar_usuario: "",
+      usuarioEncontrado: false,
     }
   },
   methods:{
   //Aca llamamos los localstorege que habiamos guardado en la vista de registro y validamos que 
   //el user y la contraseña
     ValidarLogin: function(){
-      const user = localStorage.getItem("usuarioNuevo") ;
-      const contra = localStorage.getItem("contrasenaNueva");
-      if(this.validar_usuario === user && this.validar_contrasena === contra){
-        localStorage.setItem('SesionActiva', 'true')
-        this.$router.push("/")
+      const validarUsuariosExistentes = localStorage.getItem("usurio_sistema")
+      const listaUsuarios = JSON.parse(validarUsuariosExistentes) || [];
+      for ( const usu in listaUsuarios){
+        const usuarioActual = listaUsuarios[usu]
+        if(this.validar_usuario === usuarioActual.usuario && this.validar_contrasena === usuarioActual.contrasena){
+          localStorage.setItem('SesionActiva', 'true')
+          this.usuarioEncontrado = true;
+          this.$router.push("/");
+          break;
+        }
       }
-      else{
+      if(this.usuarioEncontrado === false){
         localStorage.setItem('SesionActiva', 'false')
         alert("Usuario o contraseña incorrectos")
-      }
+      } 
     },
     //al view del home
     VolverInicio: function(){
