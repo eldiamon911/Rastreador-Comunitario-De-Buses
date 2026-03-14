@@ -56,6 +56,7 @@ export default {
   data() {
     return {
       map: null,
+      mapaActivo: true,
       busSeleccionado: null,
       rutaActiva: null,
       intervalosBuses: [],
@@ -262,7 +263,7 @@ export default {
       let i = 0;
 
       const moverAlSiguiente = () => {
-        if (!this.map) return;
+        if (!this.map || !this.mapaActivo) return;
 
         const actual = puntos[i];
         const siguiente = puntos[(i + 1) % puntos.length];
@@ -334,6 +335,7 @@ export default {
   },                                                // ← CIERRA methods
 
   beforeUnmount() {
+    this.mapaActivo = false;
     this.intervalosBuses.forEach(i => clearInterval(i));
     this.intervalosBuses = [];
 
@@ -344,8 +346,9 @@ export default {
         this.rutaActiva.off();
         try {
           this.rutaActiva.remove();
-          // eslint-disable-next-line no-empty
-        } catch (e) { }
+        } catch (e) { 
+          // intencional: silencia error si la petición HTTP sigue en vuelo
+        }
         this.rutaActiva = null;
       }
 

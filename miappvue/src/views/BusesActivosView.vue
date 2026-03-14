@@ -4,7 +4,7 @@
 <div class="contenedor">
   <div class="lista-buses">
     <div class="intro-seccion">
-      <h1 clas>Panel de Buses Activos</h1>
+      <h1>Panel de Buses Activos</h1>
       <p>Monitoreo de los buses que se encuentran operando actualmente en el sistema.</p>
       <div class="contador-buses">
         <span>{{ almacenarBusesActivos.length }} Buses en línea</span>

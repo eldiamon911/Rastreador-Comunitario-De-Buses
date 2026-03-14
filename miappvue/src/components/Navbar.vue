@@ -5,6 +5,9 @@
       <div class="menu-hamburguesa">
         <i class='bx bx-menu' v-on:click="mostrarMenuHmburguesa"></i>
         <div class="menuDesplegable" v-show="contenidoMenu">
+          <div v-on:click="llevaralMapa">
+            <ul class="txt-dentro-menuHamburguesa">Mapa</ul>
+          </div>
           <div v-on:click="ejecuarValidacionPerfil">
             <ul class="txt-dentro-menuHamburguesa">Perfil</ul>
           </div>
@@ -83,6 +86,9 @@ export default {
     volverInicio: function(){
       this.$router.push("/")
     },
+    llevaralMapa:function(){
+      this.$router.push("/mapa")
+    },
     ejecuarValidacionPerfil:function(){
       if(this.logueado === true){
         this.$router.push("/perfil")
@@ -139,6 +145,8 @@ export default {
   background: #1e3a8a;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 3px 140px;
+  position: relative;
+  z-index: 99999;
 }
 
 .seccion-izquierda {
@@ -228,7 +236,7 @@ export default {
   width: 190px;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
   padding: 10px;
-  z-index: 100;
+  z-index: 99999;
 
 }
 
