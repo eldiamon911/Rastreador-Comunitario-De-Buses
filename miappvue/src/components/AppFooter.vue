@@ -12,29 +12,53 @@
 <div class="footer-secciones">
     <h4>Menú</h4>
     <p>Inicio</p>
-    <p>Categorías</p>
-    <p>Ofertas</p>
-    <p>Notificaciones</p>
+    <p>Perfil</p>
+    <p>Explorar mapa</p>
+    <p>Administrar rutas</p>
     <p>Política de Privacidad</p>
 </div>
 
 <div class="footer-secciones">
-    <h4>Ubicaciones</h4>
-    <div class="footer-ubicaciones">
-        <p>Santa Marta</p>
+    <h4>Redes sociales</h4>
+    <div class="icono-redesSociales">
+        <i class="bx bxl-facebook-circle"></i>
+        <p class="texto-iconos">Facebook</p>
+    </div>
+    <div class="icono-redesSociales">
+        <i class="bx bxl-instagram"></i>
+        <p class="texto-iconos">Instagram</p>
+    </div>
+    <div class="icono-redesSociales">
+        <i class="bx bxl-whatsapp"></i>
+        <p class="texto-iconos">WhatsApp</p>
+    </div>
+    <div class="icono-redesSociales">
+        <i class="bx bxl-github"></i>
+        <p class="texto-iconos">GitHub</p>
     </div>
 </div>
 
 <div class="footer-contactar">
     <h4>Contacto</h4>
-    <p>Calle 123 #45-67, Santa Marta</p>
-    <p>Email: pronto@gmail.com</p>
-    <p>Tel: +57 3017657878</p>
-</div>
+    <div class="icono-redesSociales">
+        <i class="bx bx-map"></i>
+        <p>Calle 5 #45-67 Santa Marta</p>
     </div>
+    <div class="icono-redesSociales">
+        <i class="bx bxl-gmail"></i>
+        <p> pronto@gmail.com</p>
+    </div>
+    <div class="icono-redesSociales">
+        <i class="bx bx-phone"></i>
+        <p> +57 3017657878</p>
+    </div>
+</div>
+
+</div>
     <div class="footer-derechos">
     <p>© 2026 Pronto | Todos los derechos reservados</p>
-    </div>
+</div>
+
 </footer>
 </template>
 
@@ -103,4 +127,13 @@
     font-size: 12px;
     color: white;
 }
+
+.icono-redesSociales {
+    font-size: 21px;
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+}
+
+
 </style>

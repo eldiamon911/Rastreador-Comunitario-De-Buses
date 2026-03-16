@@ -20,7 +20,7 @@
           <div class="botones-grupo">
 
             <router-link to="/mapa" @click="validacionSesionMapa">
-              <button class="btn-explorarRutas">Explorar Rutas</button>
+              <button class="btn-explorarRutas">Explorar rutas</button>
             </router-link>
 
             <button class="btn-saberMas">Saber más</button>
@@ -49,7 +49,7 @@
       <div class="contenedor-tarjetas">
 
         <div class="tarjeta-informativa">
-          <div class="icono-servicio"><i class='bx bxs-zap'></i></div>
+          <div class="icono-servicio"><i class=' bx bx-stopwatch'></i></div>
           <h3>Tiempo Real</h3>
           <p>Algoritmos de alta precisión para que sepas exactamente dónde está tu bus cada segundo.</p>
         </div>
@@ -174,7 +174,7 @@ export default {
   color: #1a1a1a;
   padding: 15px 27px;
   border-radius: 10px;
-  border-color: #8b8b8b;
+  border: none;
   font-weight: bold;
   cursor: pointer;
 }
