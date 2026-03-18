@@ -12,7 +12,6 @@
 <div class="footer-secciones">
     <h4>Menú</h4>
     <p>Inicio</p>
-    <p>Perfil</p>
     <p>Explorar mapa</p>
     <p>Administrar rutas</p>
     <p>Política de Privacidad</p>
@@ -32,10 +31,7 @@
         <i class="bx bxl-whatsapp"></i>
         <p class="texto-iconos">WhatsApp</p>
     </div>
-    <div class="icono-redesSociales">
-        <i class="bx bxl-github"></i>
-        <p class="texto-iconos">GitHub</p>
-    </div>
+   
 </div>
 
 <div class="footer-contactar">
@@ -100,7 +96,7 @@
 }
 
 .footer-logo{
-    width: 150px;
+    width: 190px;
     margin-bottom: 12px;
 }
 
