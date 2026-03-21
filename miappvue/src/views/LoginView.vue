@@ -11,10 +11,10 @@
         <div class="login">
             <h2 class="login_b">Bienvenido</h2>
             <p class="parrafo_login">Inicia sesión para continuar</p>
-            <input type="text" placeholder="Ingrese el usuario" class="boton1 boton" id="usuario">
-            <input type="password" placeholder="Ingrese la contraseña" class="boton2 boton" id="contrasena">
+            <input type="text" placeholder="Ingrese el usuario" class="boton1 boton" id="usuario" v-model="validar_usuario">
+            <input type="password" placeholder="Ingrese la contraseña" class="boton2 boton" id="contrasena" v-model="validar_contrasena">
             <a href="#" class="contrasenaO">¿Olvidaste la contraseña?</a>
-            <button class="IniciarSesion">Iniciar sesion</button>
+            <button class="IniciarSesion" @click="ValidarLogin">Iniciar sesion</button>
             <p class="regirtrar">¿No tienes cuenta aún? <a class="color_registro" @click="ResgistrarLogin">Registrarse</a></p>
         </div>
     </div>
