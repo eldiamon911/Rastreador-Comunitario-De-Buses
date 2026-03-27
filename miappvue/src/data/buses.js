@@ -6,7 +6,8 @@ export const buses = [
         conductor: "Carlos Pérez",
         placa: "ABC-123",
         posicion: [11.2055, -74.2265], // Cerca de Ziruma, mitad de ruta
-        capacidad: 40
+        capacidad: 40,
+        estado: "En movimiento",
     },
     {
         id: 2,
@@ -14,7 +15,8 @@ export const buses = [
         conductor: "María Gómez",
         placa: "DEF-456",
         posicion: [11.2605, -74.1830], // En Timayui, tramo intermedio
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 3,
@@ -22,7 +24,8 @@ export const buses = [
         conductor: "Juan Rodríguez",
         placa: "GHI-789",
         posicion: [11.2055, -74.2265], // Zona hotelera (Irotama / Estelar)
-        capacidad: 35
+        capacidad: 35,
+        estado:"En movimiento" ,
     },
     {
         id: 4,
@@ -30,7 +33,8 @@ export const buses = [
         conductor: "Ana Martínez",
         placa: "JKL-012",
         posicion: [11.2055, -74.2265], // Entrada Ciudad Equidad
-        capacidad: 25
+        capacidad: 25,
+        estado: "En movimiento",
     },
     {
         id: 5,
@@ -38,7 +42,8 @@ export const buses = [
         conductor: "Luis Fernández",
         placa: "MNO-345",
         posicion: [11.2605, -74.1830], // Sector La Lucha, cerca de Gaira
-        capacidad: 20
+        capacidad: 20,
+        estado:"En movimiento" ,
     },
     {
         id: 6,
@@ -46,7 +51,8 @@ export const buses = [
         conductor: "Pedro Gómez",
         placa: "PQR-678",
         posicion: [11.2150, -74.2300], // Terminal de La Lucha
-        capacidad: 25
+        capacidad: 25,
+        estado: "En movimiento",
     },
     { 
         id: 7,
@@ -54,7 +60,8 @@ export const buses = [
         conductor: "Carolina Díaz",
         placa: "STU-901",
         posicion: [11.2055, -74.2265], // Terminal de Gaira
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 8,
@@ -62,7 +69,8 @@ export const buses = [
         conductor: "José Ramírez",
         placa: "VWX-567",
         posicion: [11.2150, -74.2300], // Terminal La Lucha
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 9,
@@ -70,7 +78,8 @@ export const buses = [
         conductor: "Marcos López",
         placa: "YZA-678",
         posicion: [11.2150, -74.2300], // Terminal Mamatoco
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 10,
@@ -78,7 +87,8 @@ export const buses = [
         conductor: "Laura Torres",
         placa: "BCD-901",
         posicion: [11.2150, -74.2300], // Terminal de Mamatoco
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 11,
@@ -86,7 +96,8 @@ export const buses = [
         conductor: "José Ramírez",
         placa: "EFG-567",
         posicion: [11.2150, -74.2300], // Terminal de La Lucha
-        capacidad: 25
+        capacidad: 25,
+        estado: "En movimiento",
     },
     {
         id: 12,
@@ -94,7 +105,8 @@ export const buses = [
         conductor: "Fernando López",
         placa: "HIJ-678",
         posicion: [11.2480, -74.1880], // Terminal de Mamatoco
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 13,
@@ -102,7 +114,8 @@ export const buses = [
         conductor: "Sofía Martínez",
         placa: "KLM-345",
         posicion: [11.2480, -74.1880], // Terminal de Mamatoco
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 14,
@@ -110,7 +123,8 @@ export const buses = [
         conductor: "Sofía Ramírez",
         placa: "PQR-567",
         posicion: [11.2055, -74.2265], // Terminal de la Lucha
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 15,
@@ -118,7 +132,8 @@ export const buses = [
         conductor: "Fernando Castillo",
         placa: "STU-678",
         posicion: [11.2055, -74.2265], // Terminal de la Lucha
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 16,
@@ -126,7 +141,8 @@ export const buses = [
         conductor: "Luis Ramírez",
         placa: "POZ-123",
         posicion: [11.2475, -74.1990], // Terminal de Gaira
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 17,
@@ -134,7 +150,8 @@ export const buses = [
         conductor: "Carolina Pacheco",
         placa: "EST-456",
         posicion: [11.2480, -74.1985], // Terminal de Mamatoco
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 18,
@@ -142,7 +159,8 @@ export const buses = [
         conductor: "Andrés Martínez",
         placa: "CBH-789",
         posicion: [11.2380, -74.1810], // Terminal de Gaira
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 19,
@@ -150,7 +168,8 @@ export const buses = [
         conductor: "Juan Pérez",
         placa: "CEQ-789",
         posicion: [11.2150, -74.2300], // Terminal de Mamatoco
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 20,
@@ -158,7 +177,8 @@ export const buses = [
         conductor: "María Gómez",
         placa: "ROD-123",
         posicion: [11.2055, -74.2265], // Terminal de La Lucha
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 21,
@@ -166,7 +186,8 @@ export const buses = [
         conductor: "Carlos Rodríguez",
         placa: "RDR-456",
         posicion: [11.2150, -74.2300], // Terminal de Mamatoco
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     },
     {
         id: 22,
@@ -174,6 +195,7 @@ export const buses = [
         conductor: "Ana Gómez",
         placa: "UDM-789",
         posicion: [11.2055, -74.2265], // Terminal de La Lucha
-        capacidad: 30
+        capacidad: 30,
+        estado: "En movimiento",
     }    
 ]

@@ -14,7 +14,7 @@
         <p>Buses activos</p>
       </div>
 
-      <div class="mini-carta" v-on:click="mostrarBusesActivos">
+      <div class="mini-carta" v-on:click="verRutasDisponibles">
         <div class="icon">🗺</div>
         <h2>{{ rutasDisponibles }}</h2>
         <p>Rutas disponibles</p>
@@ -33,6 +33,7 @@
       <p><b>Conductor:</b> {{ busSeleccionado.conductor }}</p>
       <p><b>Placa:</b> {{ busSeleccionado.placa }}</p>
       <p><b>Capacidad:</b> {{ busSeleccionado.capacidad }} pasajeros</p>
+      <p><b>Estado:</b> {{ estadoDeLosBuses }}</p>
 
       <button @click="cerrarPanel">Cerrar</button>
       <button v-show="confirmarSesionMapa" v-on:click="guardarRuta">Guardar ruta</button>
@@ -58,6 +59,7 @@ export default {
       map: null,
       mapaActivo: true,
       busSeleccionado: null,
+      estadoDeLosBuses: "En movimiento",
       rutaActiva: null,
       intervalosBuses: [],
       busesMarkers: [],
@@ -114,11 +116,12 @@ export default {
 
       marker.on("click", () => {
         this.busSeleccionado = bus;
+        this.estadoDeLosBuses = bus.estado;
         this.mostrarRuta(ruta, index);
         marker.setZIndexOffset(1000);
       });
 
-      this.animarBus(marker, ruta);
+      this.animarBus(marker, ruta, bus);
     });
 
     this.map.locate({ setView: true, maxZoom: 16 });
@@ -258,7 +261,7 @@ export default {
       ).openPopup();
     },
 
-    animarBus(marker, ruta) {
+    animarBus(marker, ruta, bus) {
       const puntos = ruta.puntos.map(p => L.latLng(p[0], p[1]));
       let i = 0;
 
@@ -267,6 +270,20 @@ export default {
 
         const actual = puntos[i];
         const siguiente = puntos[(i + 1) % puntos.length];
+
+        // verifica si el bus está cerca de alguna parada (menos de 80 metros)
+        const cercaDeParada = paradas.some(p => {
+          const distancia = this.map.distance(actual, L.latLng(p.coord[0], p.coord[1]));
+          return distancia < 80;
+        });
+
+        // actualiza el estado del bus
+        bus.estado = cercaDeParada ? "En parada 🛑" : "En movimiento 🚌";
+
+        // si este bus está seleccionado actualiza el estado visible en el panel
+        if (this.busSeleccionado && this.busSeleccionado.id === bus.id) {
+          this.estadoDeLosBuses = bus.estado;
+        }
 
         const angulo = Math.atan2(
           siguiente.lng - actual.lng,
@@ -346,7 +363,7 @@ export default {
         this.rutaActiva.off();
         try {
           this.rutaActiva.remove();
-        } catch (e) { 
+        } catch (e) {
           // intencional: silencia error si la petición HTTP sigue en vuelo
         }
         this.rutaActiva = null;
