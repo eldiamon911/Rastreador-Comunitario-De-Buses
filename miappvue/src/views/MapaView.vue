@@ -498,6 +498,7 @@ h1 {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
   z-index: 1000;
   animation: aparecerPanel 0.35s ease;
+  
 }
 
 @keyframes aparecerPanel {

@@ -2,6 +2,8 @@
 
   <main class="pagina-inicio">
 
+     <ToastComponent position="top-center"/>
+
     <div class="Contenedor">
         <div class="info">
             <img src="../assets/logo+tipografia-pronto.png" alt="" class="logo">
@@ -24,6 +26,7 @@
 </template>
 
 <script>
+
 export default {
   name: "LoginView",
   data(){
@@ -33,43 +36,56 @@ export default {
       usuarioEncontrado: false,
     }
   },
-  methods:{
-  //Aca llamamos los localstorege que habiamos guardado en la vista de registro y validamos que 
-  //el user y la contraseña
-    ValidarLogin: function(){
-      const validarUsuariosExistentes = localStorage.getItem("usurio_sistema")
-      const listaUsuarios = JSON.parse(validarUsuariosExistentes) || [];
-      for ( const usu in listaUsuarios){
-        const usuarioActual = listaUsuarios[usu]
-        if(this.validar_usuario === usuarioActual.usuario && this.validar_contrasena === usuarioActual.contrasena){
-          localStorage.setItem('SesionActiva', 'true')
-          this.usuarioEncontrado = true;
-          this.$router.push("/");
-          break;
-        }
-      }
-      if(this.usuarioEncontrado === false){
-        localStorage.setItem('SesionActiva', 'false')
-        alert("Usuario o contraseña incorrectos")
-      } 
-    },
-    //al view del home
-    VolverInicio: function(){
-      this.$router.push("/")
-    },
-    //para dirigir a el view de registro
-    ResgistrarLogin: function(){
-      this.$router.push("/registro")
+  methods: {
+  ValidarLogin: function() {
+
+    // 1. Limpiamos alertas previas para evitar acumulación
+    this.$toast.removeAllGroups();
+
+    // 2. VALIDACIÓN DE CAMPOS VACÍOS (Nueva sección)
+    if (!this.validar_usuario || !this.validar_contrasena) {
+      this.$toast.add({
+        severity: 'warn',
+        summary: 'Atención',
+        detail: 'Por favor, llene todos los campos',
+        life: 3000
+      });
+      return; // Detenemos la ejecución aquí para que no intente validar el login
     }
 
+    // 3. Lógica de validación de usuario (Tu código existente)
+    const validarUsuariosExistentes = localStorage.getItem("usurio_sistema");
+    const listaUsuarios = JSON.parse(validarUsuariosExistentes) || [];
+    
+    // Reiniciamos el estado por si falló en intentos anteriores
+    this.usuarioEncontrado = false; 
 
+    for (const usu in listaUsuarios) {
+      const usuarioActual = listaUsuarios[usu];
+      if (this.validar_usuario === usuarioActual.usuario && this.validar_contrasena === usuarioActual.contrasena) {
+        localStorage.setItem('SesionActiva', 'true');
+        this.usuarioEncontrado = true;
+        this.$router.push("/");
+        break;
+      }
+    }
+
+    // 4. Alerta si después de buscar no se encontró nada
+    if (this.usuarioEncontrado === false) {
+      localStorage.setItem('SesionActiva', 'false');
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Acceso denegado',
+        detail: 'Usuario o contraseña incorrectos',
+        life: 3000
+      });
+    }
+  },
   }
-  
 }
 </script>
 
 <style scoped>
-
 .pagina-inicio {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #eef5ff, #dbeafe, #eff6ff);

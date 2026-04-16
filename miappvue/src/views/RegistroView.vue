@@ -1,5 +1,6 @@
 <template>
   <main class="pagina-registro">
+    <ToastComponent position="top-center"/>
     <div class="Contenedor-registro">
       
       <section class="formulario-registro">
@@ -53,8 +54,13 @@ export default {
     }
   },
   methods: {
+
+    
     //registra el usuario y lo guarda en el localstrorege, tambien validamos que ingresen todos los datos
     RegistrarUsuario: function(){
+
+      this.$toast.removeAllGroups();
+
         if(this.nuevo_usuario && this.nueva_contrasena && this.nuevo_correo && this.nuevo_nombre){
           let usuriosNuevosLista = JSON.parse(localStorage.getItem("usurio_sistema")) || []
           const nuevosUsuarios = {
@@ -76,7 +82,12 @@ export default {
 
         }
         else{
-            alert("Llene todos los campos")
+            this.$toast.add({ 
+            severity: 'warn', 
+            summary: 'Atención', 
+            detail: 'Por favor, llene todos los campos', 
+            life: 3000 
+          });
         }
     },
     VolverAlLogin: function(){
@@ -120,7 +131,6 @@ export default {
 .formulario-registro {
   display: flex;
   width: 60% ;
-
   flex-direction: column;
   background-color: white;
   justify-content: center;
@@ -164,10 +174,10 @@ export default {
   padding: 11px 15px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
-  background: #f9fafb;
+  background: #ffffff;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-
+  color: #000000;
 }
 
 .input-estilo:focus {

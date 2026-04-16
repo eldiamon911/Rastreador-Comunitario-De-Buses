@@ -18,19 +18,14 @@
              La tecnología que guía a los samarios directo a su destino, con seguimiento en vivo y sin complicaciones.</p>
 
           <div class="botones-grupo">
-
-            <router-link to="/mapa" @click="validacionSesionMapa">
-              <button class="btn-explorarRutas">Explorar rutas</button>
-            </router-link>
-
+            <button @click="irAlMapa" class="btn-explorarRutas">Explorar rutas</button>
             <button class="btn-saberMas">Saber más</button>
           </div>
-
         </div>
         
         <div class="zona-imagen">
           <div class="contenedor-bus">
-            <img src="../assets/imagen-bus.png" alt="Pronto Bus" class="imagen-flotante">
+            <ImageComponent :src="require('../assets/imagen-bus.png')" alt="Pronto Bus" class="estilo-bus-premium" preview/>
             <div class="efecto-pulso"></div>
           </div>
         </div>
@@ -76,27 +71,27 @@
 
 
 <script>
-
 export default {
-  data(){
-    return{
-      
-    }
-  },
   methods: {
-    validacionSesionMapa: function(){
-      const validarSesionActiva = localStorage.getItem('SesionActiva')
-      if(validarSesionActiva == 'true'){
-        localStorage.setItem('verificarGuardarRuta','true')
-      }
-      else{
-        localStorage.setItem('verificarGuardarRuta','false')
+    irAlMapa: function() {
+      // 1. Revisamos si hay sesión
+      const validarSesionActiva = localStorage.getItem('SesionActiva');
+
+      if (validarSesionActiva === 'true') {
+        // Usuario logueado: Permitimos guardar rutas y navegamos
+        localStorage.setItem('verificarGuardarRuta', 'true');
+        this.$router.push("/mapa");
+      } else {
+        // Usuario NO logueado: 
+        localStorage.setItem('verificarGuardarRuta', 'false');
+
+        
+        // Si quieres que entre al mapa pero sin permisos de guardar:
+        this.$router.push("/mapa");
       }
     },
   }
-
 }
-
 </script>
 
 
@@ -198,15 +193,57 @@ export default {
   background: rgba(255,255,255,0.05);
 }
 
-.zona-imagen {                    /*mantiene la imagen el bus a la derecha (celedon)*/
-  width: 45%; 
+
+
+/* Ajuste del contenedor de PrimeVue */
+.contenedor-bus :deep(.p-image) {
+  display: block;
+  position: relative;
+  z-index: 5;
+  /* El secreto del resplandor azul (glow) */
+  box-shadow: 0 0 35px rgba(0, 102, 255, 0.836); 
+  border-radius: 30px; /* Bordes muy redondeados */
+  overflow: hidden;
+  transition: all 0.4s ease;
+
 }
 
-.imagen-flotante {
-  width: 110%;
-  border-radius: 25px;
-  filter: drop-shadow(0 0px 30px rgba(0, 102, 255, 0.836));       /*borde azul alredor de la imagen del bus (celedon)*/
+/* Estilo de la imagen interna */
+.contenedor-bus :deep(.p-image img) {
+  width: 100%;
+  max-width: 600px; /* Tamaño similar al de la captura */
+  height: auto;
+  display: block;
+  object-fit: cover;
 }
+
+
+/* Icono de la lupa en amarillo Pronto */
+.contenedor-bus :deep(.p-image-preview-icon) {
+  color: #ffd500 !important;
+  font-size: 2.5rem;
+}
+
+/* Ajuste del efecto pulso para que esté centrado */
+.efecto-pulso {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  /* CAMBIO CLAVE: Tamaño controlado */
+  width: 80%; 
+  height: 80%;
+  
+  /* ESTA LÍNEA ES LA QUE ACTIVA TUS BOTONES */
+  pointer-events: none; 
+  
+  z-index: 1; /* Se queda atrás del bus que tiene z-index 5 */
+  border-radius: 50%;
+
+}
+
+
 
 .seccion-servicios {                 /* esta es la seccion de tarjetas inferiores (celedon)*/
   padding: 80px 10%; 
