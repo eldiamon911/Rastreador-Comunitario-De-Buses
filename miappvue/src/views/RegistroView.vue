@@ -102,7 +102,6 @@ export default {
           life: 3000 
         });
       } else {
-        // crear nuevo objeto de usuario
         const nuevoUsuario = {
           usuario: this.nuevo_usuario,
           contrasena: this.nueva_contrasena,

@@ -2,20 +2,7 @@
   <header class="header-principal">  
     
     <div class="seccion-izquierda">
-      <div class="menu-hamburguesa">
-        <i class='bx bx-menu' v-on:click="mostrarMenuHmburguesa"></i>
-        <div class="menuDesplegable" v-show="contenidoMenu">
-          <div v-on:click="llevaralMapa">
-            <ul class="txt-dentro-menuHamburguesa">Mapa</ul>
-          </div>
-          <div v-on:click="ejecuarValidacionPerfil">
-            <ul class="txt-dentro-menuHamburguesa">Perfil</ul>
-          </div>
-          <div v-on:click="ejecuarValidacion" v-show="contenidoMenu">
-            <ul class="txt-dentro-menuHamburguesa">Administrar rutas</ul>
-          </div>
-        </div>
-      </div>
+      <menu-hamburguesa-componente />
 
       <div class="logo" v-on:click="volverInicio">
         <img class="logo-icono" src="../assets/logo-bus.png" alt="Logo bus">
@@ -53,9 +40,13 @@
 
 <script>
 import { buses } from '@/data/buses'
+import MenuHamburguesaComponente from './MenuHamburguesaComponente.vue';
 
 export default {
   name: "AppNavbar",
+  components: {
+    MenuHamburguesaComponente
+  },
 
   data() {
     return {
@@ -86,26 +77,6 @@ export default {
     volverInicio: function(){
       this.$router.push("/")
     },
-    llevaralMapa:function(){
-      this.$router.push("/mapa")
-    },
-    ejecuarValidacionPerfil:function(){
-      if(this.logueado === true){
-        this.$router.push("/perfil")
-      }
-      else{
-        this.$router.push("/login")
-      }
-
-    },
-    ejecuarValidacion: function(){
-      if(this.logueado === true){
-        this.$router.push("/administrarRutas")
-      }
-      else{
-        this.$router.push("/login")
-      }
-    },
     //funcion para el mounted y watch
     verificarSesion() {
       const mostrador = localStorage.getItem('SesionActiva');
@@ -116,15 +87,6 @@ export default {
       }
     },
       
-    //Aca es para cuando toque las tres rayitas se muestre el contenido
-    mostrarMenuHmburguesa: function(){
-      if(this.contenidoMenu === false){
-        this.contenidoMenu = true
-      }
-      else{
-        this.contenidoMenu = false
-      }
-    }
   } 
 } 
 </script>
@@ -219,39 +181,4 @@ export default {
 .boton-sesion:hover, .boton-registro:hover {
   background: rgba(224, 195, 30, 0.973);
 }
-
-.menu-hamburguesa {
-  position: relative;
-  font-size: 32px;
-  color: white;
-  cursor: pointer;
-}
-
-.menuDesplegable {
-  position: absolute;
-  top: 35px;
-  left: 0;
-  background: white;
-  border-radius: 6px;
-  width: 190px;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
-  padding: 10px;
-  z-index: 99999;
-
-}
-
-.menuDesplegable ul {
-  padding:5px 2px;
-  cursor:pointer;  
-}
-
-.menuDesplegable ul:hover {
-  background:#f1f5f9;
-}
-
-.txt-dentro-menuHamburguesa {
-  color: black;
-
-}
-
 </style>

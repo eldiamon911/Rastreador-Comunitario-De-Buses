@@ -57,7 +57,8 @@ export default{
 
             setTimeout(() => {
             this.listaReportes.shift();
-            }, 600000);
+            localStorage.setItem('mis_reportes', JSON.stringify(this.listaReportes));
+            }, 60000);
         }
             else{
                 alert("Llene el reporte correctamente")
@@ -133,8 +134,8 @@ export default{
     margin-bottom: 6px;
 }
 
-.resporte-texto{
-    color: #334155;
+.reporte-texto{
+    color: black;
     font-size: 15px;
     line-height: 1.5;
 }

@@ -161,6 +161,7 @@ export default {
 
 .btn-borrar:hover {
     background: #dc2626;
+    color: white;
 }
 
 .nombre-ruta {
