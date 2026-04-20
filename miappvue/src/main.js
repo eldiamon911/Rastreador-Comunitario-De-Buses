@@ -2,22 +2,22 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/index.js'
 
-// Estilos de mapas y temas
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
 import 'leaflet/dist/leaflet.css'
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 
-// Servicios de Mensajes (Toasts)
 import ToastService from 'primevue/toastservice'
 import Toast from 'primevue/toast'
 import Image from 'primevue/image'
-
 import ProgressSpinner from 'primevue/progressspinner';
+import Dialog from 'primevue/dialog';
+import Checkbox from 'primevue/checkbox';
 
 
-// Conexión a API
-import axios from 'axios'
-import VueAxios from 'vue-axios'
+
 
 const app = createApp(App)
 
@@ -35,9 +35,11 @@ app.use(PrimeVue, {
 // 3. Activar el servicio de mensajes
 app.use(ToastService);
 
-// 4. Registrar el componente Toast de forma global
+// 4. Registrar el componente de forma global
 app.component('ToastComponent', Toast);
 app.component('ImageComponent', Image);
 app.component('ProgressSpinner', ProgressSpinner);
+app.component('DialogComponent', Dialog);
+app.component('CheckBox', Checkbox);
 
 app.mount('#app')

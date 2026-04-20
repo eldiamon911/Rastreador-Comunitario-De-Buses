@@ -26,10 +26,7 @@ export default {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-
-
 .p-toast-detail {
     color:white !important;                             /* color de la descripcion*/
 }
- 
 </style>

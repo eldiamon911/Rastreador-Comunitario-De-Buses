@@ -90,7 +90,7 @@
         if (!ruta) return;
 
         const busIcon = L.icon({
-          iconUrl: "https://cdn-user-icons.flaticon.com/145514/145514772/1776411842695.svg?token=exp=1776417684~hmac=29c9ec8125cba3772a6b78e1e400498a", // Icono azul
+          iconUrl: "https://cdn-icons-png.flaticon.com/128/3448/3448316.png", // Icono azul
           iconSize: [40, 40],
           iconAnchor: [20, 20]
         });

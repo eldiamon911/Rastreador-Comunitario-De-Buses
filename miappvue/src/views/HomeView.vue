@@ -1,6 +1,4 @@
 <template>
-  
-<transition name="fade-blur">
     <div v-if="cargando" class="pantalla-carga">
       <div class="escena-animacion">       
         <div class="logo-carga">
@@ -13,7 +11,6 @@
         </div>
       </div>
     </div>
-  </transition>
 
   <main class="pagina-inicio">
 
@@ -87,27 +84,20 @@
 
 <script>
 export default {
-  name: 'VistaPrincipal', // Opcional: ayuda a identificar el componente en las DevTools
-  
   data() {
     return {
-      // Esta es la variable que controla la pantalla de carga
-      cargando: true 
+      cargando: true    // esta es la variable que controla la pantalla de carga
     };
   },
 
   mounted() {
-    // Apenas el sitio termina de "montarse" en el navegador:
-    // Agregamos un pequeño retraso de 2.5 segundos para que el usuario
-    // pueda apreciar la animación del bus antes de entrar al sitio.
-    setTimeout(() => {
-      this.cargando = false;
+    setTimeout(() => {             // agregamos un retraso de 2.5 segundos para que el usuario
+      this.cargando = false;       // pueda apreciar la animación del bus antes de entrar al sitio web
     }, 2500);
   },
 
   methods: {
     irAlMapa: function() {
-      // Tu lógica existente para el mapa
       const validarSesionActiva = localStorage.getItem('SesionActiva');
 
       if (validarSesionActiva === 'true') {
@@ -181,7 +171,7 @@ export default {
 }
 
 .bus-animado {
-  width: 180px;                /* Ajusta según la imagen */
+  width: 180px;                /* ajusta según la imagen */
   height: auto;
   z-index: 2;
   animation: conducirBus 3s linear infinite;   /* velocidad en la que se mueve el bus*/

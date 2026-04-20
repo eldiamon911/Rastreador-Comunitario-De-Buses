@@ -16,29 +16,24 @@
       <div class="formulario-vertical">
         <div class="campo">
           <label for="nuevo_usuario">Usuario</label>
-          <input 
-            type="text" 
-            placeholder="Crea tu nombre de usuario" 
-            class="input-moderno" 
-            id="nuevo_usuario" 
-            v-model="nuevo_usuario"
-          >
+          <input type="text" placeholder="Crea tu nombre de usuario" class="input-moderno" id="nuevo_usuario" v-model="nuevo_usuario">
         </div>
 
         <div class="campo">
           <label for="nueva_contrasena">Contraseña</label>
-          <input 
-            type="password" 
-            placeholder="Crea tu contraseña" 
-            class="input-moderno" 
-            id="nueva_contrasena" 
-            v-model="nueva_contrasena"
-          >
+          <input type="password" placeholder="Crea tu contraseña" class="input-moderno" id="nueva_contrasena" v-model="nueva_contrasena">
+        </div>
+
+        <div class="contenedor-terminos">
+          <CheckBox v-model="aceptaTerminos" :binary="true" id="checkTerminos" />
+          <label for="checkTerminos" class="label-terminos">
+            Acepto los <a href="#" @click.prevent="mostrarModal = true">términos y condiciones</a>
+          </label>
         </div>
       </div>
 
       <div class="footer-acciones">
-        <button class="btn-login-principal" @click="RegistrarUsuario">
+        <button class="btn-login-principal" @click="RegistrarUsuario" :disabled="!aceptaTerminos">
           Registrarme ahora
         </button>
         
@@ -49,6 +44,45 @@
         </button>
       </div>
     </div>
+
+<DialogComponent 
+  v-model:visible="mostrarModal" 
+  modal 
+  header="Términos y Condiciones" 
+  :style="{ width: '85vw', maxWidth: '500px' }"
+  class="modal-dark"
+>
+  <div class="cuerpo-legal">
+    <section>
+      <h3>1. Uso del Servicio</h3>
+      <p>Pronto es una plataforma de información en tiempo real para el transporte público de Santa Marta. El usuario acepta que la precisión de los datos depende de los sistemas GPS de terceros.</p>
+    </section>
+
+    <section>
+      <h3>2. Privacidad de Datos</h3>
+      <p>Su nombre de usuario y contraseña se almacenan de forma local. No recopilamos información personal sensible ni compartimos sus datos con entidades externas.</p>
+    </section>
+
+    <section>
+      <h3>3. Responsabilidad Limitada</h3>
+      <p>El sistema Pronto no se hace responsable por retrasos en las rutas, cambios de itinerario de los buses o fallas en la conexión de red del dispositivo del usuario.</p>
+    </section>
+
+    <section>
+      <h3>4. Propiedad Intelectual</h3>
+      <p>El diseño de la interfaz, logotipos y el nombre "Pronto" son propiedad intelectual del proyecto. Queda prohibida su reproducción sin autorización.</p>
+    </section>
+
+    <section>
+      <h3>5. Modificaciones</h3>
+      <p>Nos reservamos el derecho de actualizar estos términos para mejorar la seguridad y la experiencia del ciudadano samario.</p>
+    </section>
+  </div>
+
+  <template #footer>
+    <button class="btn-entendido" @click="mostrarModal = false">Entendido</button>
+  </template>
+</DialogComponent>
   </main>
 </template>
 
@@ -57,69 +91,52 @@ export default {
   data() {
     return {
       nuevo_usuario: "",
-      nueva_contrasena: ""
+      nueva_contrasena: "",
+      aceptaTerminos: false,
+      mostrarModal: false
     }
   },
   methods: {
     RegistrarUsuario: function() {
-
-      // esta funcion sirve para que no se repitan las alertas, solo se ve 1 sola
       this.$toast.removeAllGroups();
 
-      // validacion de campos vacios
-      if (!this.nuevo_usuario || !this.nueva_contrasena) {
+      // Validación de términos (por si acaso intentan saltarse el :disabled)
+      if (!this.aceptaTerminos) {
         this.$toast.add({ 
           severity: 'warn', 
-          summary: 'Campos incompletos', 
-          detail: 'Por favor, ingresa un usuario y una contraseña.', 
-          life: 3000 
-        });
-        return; // aqui se detiene la ejecucuon
-      }
-
-      // carecteres minimos para crear la contraseña (4) minimo
-      if (this.nueva_contrasena.length < 4) {
-        this.$toast.add({ 
-          severity: 'error', 
-          summary: 'Contraseña débil', 
-          detail: 'La contraseña debe tener al menos 4 caracteres.', 
+          summary: 'Atención', 
+          detail: 'Debes aceptar los términos para registrarte.', 
           life: 3000 
         });
         return;
       }
 
-      // logica de almacenamiento en el localstorage
-      let usuariosLista = JSON.parse(localStorage.getItem("usurio_sistema")) || [];
+      if (!this.nuevo_usuario || !this.nueva_contrasena) {
+        this.$toast.add({ severity: 'warn', summary: 'Campos incompletos', detail: 'Por favor, ingresa un usuario y una contraseña.', life: 3000 });
+        return;
+      }
 
-      // verifica si un usuario ya existe
+      if (this.nueva_contrasena.length < 4) {
+        this.$toast.add({ severity: 'error', summary: 'Contraseña débil', detail: 'La contraseña debe tener al menos 4 caracteres.', life: 3000 });
+        return;
+      }
+
+      let usuariosLista = JSON.parse(localStorage.getItem("usurio_sistema")) || [];
       const usuarioExistente = usuariosLista.find(us => us.usuario === this.nuevo_usuario);
 
       if (usuarioExistente) {
-        this.$toast.add({ 
-          severity: 'error', 
-          summary: 'Usuario no disponible', 
-          detail: 'Este nombre de usuario ya está registrado.', 
-          life: 3000 
-        });
+        this.$toast.add({ severity: 'error', summary: 'Usuario no disponible', detail: 'Este nombre de usuario ya está registrado.', life: 3000 });
       } else {
         const nuevoUsuario = {
           usuario: this.nuevo_usuario,
           contrasena: this.nueva_contrasena,
         };
 
-        // Guardar
         usuariosLista.push(nuevoUsuario);
         localStorage.setItem("usurio_sistema", JSON.stringify(usuariosLista));
 
-        // muestra una alerta de exito al crear un usuario
-        this.$toast.add({ 
-          severity: 'success', 
-          summary: '¡Éxito!', 
-          detail: 'Usuario creado correctamente. Redirigiendo...', 
-          life: 4000 
-        });
+        this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Usuario creado correctamente. Redirigiendo...', life: 4000 });
 
-        // redireccion con un pequeño retraso para que vean el mensaje de exito
         setTimeout(() => {
           this.$router.push("/login");
         }, 4000);
@@ -323,5 +340,68 @@ label {
 
 .btn-secundario-glass:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+.contenedor-terminos {         /* estilo para el checkbox / casilla aceptar terminos*/
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 0 5px;
+}
+
+.label-terminos {
+  color: #d1d1d1;
+  font-size: 0.85rem;
+}
+
+.label-terminos a {
+  color: #ffd500;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.btn-login-principal:disabled {     /* el boton permanece desabilitado mientras no se acepten los terminos*/
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-entendido {
+  background: #ffd500;
+  color: #0a0f18;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cuerpo-legal {
+  max-height: 400px;      /* permite scroll si el texto es muy largo */
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.cuerpo-legal section {
+  margin-bottom: 20px;
+}
+
+.cuerpo-legal h3 {
+  color: #ffd500;               /* titulos en amarillo*/
+   font-size: 13px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+}
+
+.cuerpo-legal p {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-align: justify;
+  font-size: 14px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+
 }
 </style>
