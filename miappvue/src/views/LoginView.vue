@@ -61,67 +61,71 @@ export default {
     return {
       validar_usuario: "",
       validar_contrasena: "",
-    };
+    }
   },
 
   methods: {
-    ValidarLogin: function() {
+    async ValidarLogin() {
+      this.$toast.removeAllGroups()
 
-      // esta funcion sirve para que no se repitan las alertas, solo se ve 1 sola
-      this.$toast.removeAllGroups();
-
-      // validacion de campos vacios
       if (!this.validar_usuario || !this.validar_contrasena) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Campos incompletos',
           detail: 'Por favor, ingrese su usuario y contraseña',
           life: 3000
-        });
-        return; // aqui se detiene la ejecucuon
+        })
+        return
       }
 
-      // OBTENCIÓN DE DATOS DEL LOCALSTORAGE
-      const datosGuardados = localStorage.getItem("usurio_sistema");
-      const listaUsuarios = JSON.parse(datosGuardados) || [];
-      
-      // hace la busqueda del usuario (usamos .find para mayor eficiencia)
-      const usuarioValido = listaUsuarios.find(u => 
-        u.usuario === this.validar_usuario && 
-        u.contrasena === this.validar_contrasena
-      );
+      try {
+        const respuesta = await fetch('http://localhost:3000/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            usuario: this.validar_usuario,
+            contrasena: this.validar_contrasena
+          })
+        })
 
-      if (usuarioValido) {
-        // guardamos estado de sesión activa
-        localStorage.setItem('SesionActiva', 'true');
-        localStorage.setItem('UsuarioLogueado', usuarioValido.usuario);
+        const datos = await respuesta.json()
 
-        // alerta de exito cuando el usuario ingresa corrrectamente al sistema
+        if (!respuesta.ok) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error de Autenticación',
+            detail: datos.error,
+            life: 3000
+          })
+          return
+        }
+
+        localStorage.setItem('SesionActiva', 'true')
+        localStorage.setItem('UsuarioLogueado', datos.usuario)
+
         this.$toast.add({
           severity: 'success',
           summary: '¡Acceso Concedido!',
-          detail: `Bienvenido de nuevo, ${usuarioValido.usuario}`,
+          detail: `Bienvenido de nuevo, ${datos.usuario}`,
           life: 3000
-        });
+        })
 
-        // redireccion con un pequeño retraso para que vean el mensaje de exito
         setTimeout(() => {
-          this.$router.push("/");
-        }, 3000);
+          this.$router.push('/')
+        }, 3000)
 
-      } else {
-        localStorage.setItem('SesionActiva', 'false');
+      } catch (error) {
         this.$toast.add({
           severity: 'error',
-          summary: 'Error de Autenticación',
-          detail: 'El usuario o la contraseña son incorrectos',
+          summary: 'Error',
+          detail: 'No se pudo conectar con el servidor.',
           life: 3000
-        });
+        })
       }
     },
 
-    ResgistrarLogin: function() {
-      this.$router.push("/registro");
+    ResgistrarLogin() {
+      this.$router.push('/registro')
     }
   }
 }

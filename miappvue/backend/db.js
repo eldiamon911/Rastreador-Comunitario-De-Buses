@@ -1,20 +1,19 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
-const mysql = require('mysql2');
+const mysql = require('mysql2')
+require('dotenv').config()
 
 const conexion = mysql.createConnection({
-    host: '127.0.0.1',
-    port: 3306,
-    user: 'pronto',
-    password: '',
-    database: 'pronto_db'
-});
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+})
 
-conexion.connect((err) => {
-    if (err) {
-        console.error('Error conectando a la base de datos: ', err);
-        return;
+conexion.connect((error) => {
+    if (error) {
+        console.log('Error al conectar a la base de datos:', error)
+        return
     }
-    console.log('✅ Conectado a MySQL correctamente');
-});
+    console.log('Conectado a MySQL correctamente')
+})
 
-module.exports = conexion;
+module.exports = conexion

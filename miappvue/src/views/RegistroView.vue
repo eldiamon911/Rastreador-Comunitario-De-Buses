@@ -97,54 +97,53 @@ export default {
     }
   },
   methods: {
-    RegistrarUsuario: function() {
-      this.$toast.removeAllGroups();
+    async RegistrarUsuario() {
+      this.$toast.removeAllGroups()
 
-      // Validación de términos (por si acaso intentan saltarse el :disabled)
       if (!this.aceptaTerminos) {
-        this.$toast.add({ 
-          severity: 'warn', 
-          summary: 'Atención', 
-          detail: 'Debes aceptar los términos para registrarte.', 
-          life: 3000 
-        });
-        return;
+        this.$toast.add({ severity: 'warn', summary: 'Atención', detail: 'Debes aceptar los términos para registrarte.', life: 3000 })
+        return
       }
 
       if (!this.nuevo_usuario || !this.nueva_contrasena) {
-        this.$toast.add({ severity: 'warn', summary: 'Campos incompletos', detail: 'Por favor, ingresa un usuario y una contraseña.', life: 3000 });
-        return;
+        this.$toast.add({ severity: 'warn', summary: 'Campos incompletos', detail: 'Por favor, ingresa un usuario y una contraseña.', life: 3000 })
+        return
       }
 
       if (this.nueva_contrasena.length < 4) {
-        this.$toast.add({ severity: 'error', summary: 'Contraseña débil', detail: 'La contraseña debe tener al menos 4 caracteres.', life: 3000 });
-        return;
+        this.$toast.add({ severity: 'error', summary: 'Contraseña débil', detail: 'La contraseña debe tener al menos 4 caracteres.', life: 3000 })
+        return
       }
 
-      let usuariosLista = JSON.parse(localStorage.getItem("usurio_sistema")) || [];
-      const usuarioExistente = usuariosLista.find(us => us.usuario === this.nuevo_usuario);
+      try {
+        const respuesta = await fetch('http://localhost:3000/auth/registro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            usuario: this.nuevo_usuario,
+            contrasena: this.nueva_contrasena
+          })
+        })
 
-      if (usuarioExistente) {
-        this.$toast.add({ severity: 'error', summary: 'Usuario no disponible', detail: 'Este nombre de usuario ya está registrado.', life: 3000 });
-      } else {
-        const nuevoUsuario = {
-          usuario: this.nuevo_usuario,
-          contrasena: this.nueva_contrasena,
-        };
+        const datos = await respuesta.json()
 
-        usuariosLista.push(nuevoUsuario);
-        localStorage.setItem("usurio_sistema", JSON.stringify(usuariosLista));
+        if (!respuesta.ok) {
+          this.$toast.add({ severity: 'error', summary: 'Error', detail: datos.error, life: 3000 })
+          return
+        }
 
-        this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Usuario creado correctamente. Redirigiendo...', life: 4000 });
-
+        this.$toast.add({ severity: 'success', summary: '¡Éxito!', detail: 'Usuario creado correctamente. Redirigiendo...', life: 4000 })
         setTimeout(() => {
-          this.$router.push("/login");
-        }, 4000);
+          this.$router.push('/login')
+        }, 4000)
+
+      } catch (error) {
+        this.$toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo conectar con el servidor.', life: 3000 })
       }
     },
 
-    VolverAlLogin: function() {
-      this.$router.push("/login");
+    VolverAlLogin() {
+      this.$router.push('/login')
     }
   }
 }

@@ -43,336 +43,336 @@
 </template>
 
 <script>
-  import L from "leaflet";
-  import "leaflet/dist/leaflet.css";
-  import "leaflet-rotatedmarker";
-  import "leaflet-routing-machine";
-  import { rutas } from "../data/rutas.js";
-  import { buses } from "@/data/buses.js";
-  import { paradas } from "@/data/paradas.js";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-rotatedmarker";
+import "leaflet-routing-machine";
 
-  export default {
+export default {
     data() {
-      return {
-        map: null,
-        mapaActivo: true,
-        busSeleccionado: null,
-        estadoDeLosBuses: "En movimiento",
-        rutaActiva: null,
-        intervalosBuses: [],
-        busesMarkers: [],
-        confirmarSesionMapa: localStorage.getItem('SesionActiva') === 'true',
-        cantidadBuses: buses.length,
-        rutasDisponibles: rutas.length,
-        usuarioUbicacion: null,
-        paradaCercanaMarker: null,
-        filtroRuta: "",
-      }
+        return {
+            map: null,
+            mapaActivo: true,
+            busSeleccionado: null,
+            estadoDeLosBuses: "En movimiento",
+            rutaActiva: null,
+            intervalosBuses: [],
+            busesMarkers: [],
+            confirmarSesionMapa: localStorage.getItem('SesionActiva') === 'true',
+            cantidadBuses: 0,
+            rutasDisponibles: 0,
+            usuarioUbicacion: null,
+            paradaCercanaMarker: null,
+            filtroRuta: "",
+            buses: [],
+            rutas: [],
+            paradas: []
+        }
     },
 
-    mounted() {
-      const santaMartaBounds = L.latLngBounds([11.00, -74.28], [11.32, -74.12]);
+    async mounted() {
+        const [resBuses, resRutas, resParadas] = await Promise.all([
+            fetch('http://localhost:3000/buses'),
+            fetch('http://localhost:3000/rutas'),
+            fetch('http://localhost:3000/paradas')
+        ])
+        this.buses = await resBuses.json()
+        this.rutas = await resRutas.json()
+        this.paradas = await resParadas.json()
 
-      this.map = L.map("map", {
-        maxBounds: santaMartaBounds,
-        maxBoundsViscosity: 0.9,
-        minZoom: 11
-      }).setView([11.18, -74.21], 12);
+        // cargar puntos de cada ruta
+        for (const ruta of this.rutas) {
+            const res = await fetch(`http://localhost:3000/rutas/${ruta.id}/puntos`)
+            const puntos = await res.json()
+            ruta.puntos = puntos.map(p => [p.latitud, p.longitud])
+        }
 
-      L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-        { maxZoom: 19 }
-      ).addTo(this.map);
+        this.cantidadBuses = this.buses.length
+        this.rutasDisponibles = this.rutas.length
 
-      buses.forEach((bus) => {
-        const codigoBus = bus.ruta.split(' ')[0];
-        const ruta = rutas.find(r => r.nombre.startsWith(codigoBus));
-        if (!ruta) return;
-
-        const busIcon = L.icon({
-          iconUrl: "https://cdn-icons-png.flaticon.com/128/3448/3448316.png", // Icono azul
-          iconSize: [40, 40],
-          iconAnchor: [20, 20]
-        });
-
-        const marker = L.marker(bus.posicion, {
-          icon: busIcon,
-          rotationAngle: 0
-        }).addTo(this.map);
-
-        marker.bindTooltip(bus.ruta, { permanent: true, direction: "top" });
-
-        this.busesMarkers.push({ bus, marker, ruta });
-
-        marker.on("click", () => {
-          this.confirmarSesionMapa = localStorage.getItem('SesionActiva') === 'true';
-          this.busSeleccionado = bus;
-          this.estadoDeLosBuses = bus.estado;
-          this.mostrarRuta(ruta);
-          marker.setZIndexOffset(1000);
-        });
-
-        this.animarBus(marker, ruta, bus);
-      });
-
-      this.map.locate({ setView: true, maxZoom: 16 });
-
-      const self = this;
-
-      this.map.on("locationfound", function (e) {
-        self.usuarioUbicacion = e.latlng;
-
-        L.marker(e.latlng)
-          .addTo(self.map)
-          .bindPopup("📍 Tu estás aquí")
-          .openPopup();
-
-        L.circle(e.latlng, { radius: e.accuracy }).addTo(self.map);
-
-        self.buscarBusMasCercano();
-        self.buscarParadaMasCercana();
-      });
-
-      this.map.on("locationerror", () => {
-        alert("No se pudo obtener tu ubicación. Activa el GPS");
-      });
+        this.iniciarMapa()
     },
 
     methods: {
-      mostrarBusesActivos() {
-        this.$router.push("/busesActivos")
-      },
+        iniciarMapa() {
+            const santaMartaBounds = L.latLngBounds([11.00, -74.28], [11.32, -74.12]);
 
-      irAReportes() {
-        this.$router.push("/reportes")
-      },
+            this.map = L.map("map", {
+                maxBounds: santaMartaBounds,
+                maxBoundsViscosity: 0.9,
+                minZoom: 11
+            }).setView([11.18, -74.21], 12);
 
-      verRutasDisponibles() {
-        this.$router.push("/administrarRutas")
-      },
+            L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                { maxZoom: 19 }
+            ).addTo(this.map);
 
-      irAMiUbicacion() {
-        if (!this.usuarioUbicacion) return;
-        this.map.setView(this.usuarioUbicacion, 16, { animate: true });
-      },
+            this.buses.forEach((bus) => {
+                const ruta = this.rutas.find(r => r.codigo === bus.codigo)
+                if (!ruta) return;
 
-      mostrarRuta(ruta) {
-        const coordenadas = ruta.puntos.map(p => L.latLng(p[0], p[1]));
+                const busIcon = L.icon({
+                    iconUrl: "https://cdn-icons-png.flaticon.com/128/3448/3448316.png",
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                });
 
-        if (this.rutaActiva) {
-          this.rutaActiva.remove();
-          this.rutaActiva = null;
+                const marker = L.marker([bus.latitud, bus.longitud], {
+                    icon: busIcon,
+                    rotationAngle: 0
+                }).addTo(this.map);
+
+                marker.bindTooltip(bus.nombre_ruta, { permanent: true, direction: "top" });
+
+                this.busesMarkers.push({ bus, marker, ruta });
+
+                marker.on("click", () => {
+                    this.confirmarSesionMapa = localStorage.getItem('SesionActiva') === 'true';
+                    this.busSeleccionado = bus;
+                    this.estadoDeLosBuses = bus.estado;
+                    this.mostrarRuta(ruta);
+                    marker.setZIndexOffset(1000);
+                });
+
+                this.animarBus(marker, ruta, bus);
+            });
+
+            this.map.locate({ setView: true, maxZoom: 16 });
+
+            this.map.on("locationfound", (e) => {
+                this.usuarioUbicacion = e.latlng;
+                L.marker(e.latlng).addTo(this.map).bindPopup("📍 Tu estás aquí").openPopup();
+                L.circle(e.latlng, { radius: e.accuracy }).addTo(this.map);
+                this.buscarBusMasCercano();
+                this.buscarParadaMasCercana();
+            });
+
+            this.map.on("locationerror", () => {
+                alert("No se pudo obtener tu ubicación. Activa el GPS");
+            });
+        },
+
+        mostrarBusesActivos() {
+            this.$router.push("/busesActivos")
+        },
+
+        irAReportes() {
+            this.$router.push("/reportes")
+        },
+
+        verRutasDisponibles() {
+            this.$router.push("/administrarRutas")
+        },
+
+        irAMiUbicacion() {
+            if (!this.usuarioUbicacion) return;
+            this.map.setView(this.usuarioUbicacion, 16, { animate: true });
+        },
+
+        mostrarRuta(ruta) {
+            const coordenadas = ruta.puntos.map(p => L.latLng(p[0], p[1]));
+
+            if (this.rutaActiva) {
+                this.rutaActiva.remove();
+                this.rutaActiva = null;
+            }
+
+            if (!this.map) return;
+
+            this.rutaActiva = L.Routing.control({
+                waypoints: coordenadas,
+                router: L.Routing.osrmv1({
+                    serviceUrl: "https://router.project-osrm.org/route/v1"
+                }),
+                addWaypoints: false,
+                draggableWaypoints: false,
+                show: false,
+                createMarker: () => null,
+                lineOptions: {
+                    styles: [{ color: "#1387d4", weight: 6, opacity: 0.95 }]
+                }
+            }).addTo(this.map);
+
+            this.rutaActiva.on('routingerror', () => { /* ignorar error de ruta*/ });
+        },
+
+        buscarBusMasCercano() {
+            if (!this.usuarioUbicacion) return;
+
+            let busMasCercano = null;
+            let distanciaMinima = Infinity;
+
+            this.busesMarkers.forEach(b => {
+                const distancia = this.map.distance(this.usuarioUbicacion, b.marker.getLatLng());
+                if (distancia < distanciaMinima) {
+                    distanciaMinima = distancia;
+                    busMasCercano = b;
+                }
+            });
+
+            if (!busMasCercano) return;
+
+            const distanciaKm = (distanciaMinima / 1000).toFixed(2);
+            busMasCercano.marker.bindPopup(
+                `🚍 Bus ${busMasCercano.bus.nombre_ruta}<br>📏 ${distanciaKm} km`
+            ).openPopup();
+        },
+
+        buscarParadaMasCercana() {
+            if (!this.usuarioUbicacion) return;
+
+            let paradaMasCercana = null;
+            let distanciaMinima = Infinity;
+
+            this.paradas.forEach(parada => {
+                const distancia = this.map.distance(
+                    this.usuarioUbicacion,
+                    [parada.latitud, parada.longitud]
+                );
+                if (distancia < distanciaMinima) {
+                    distanciaMinima = distancia;
+                    paradaMasCercana = parada;
+                }
+            });
+
+            if (!paradaMasCercana) return;
+
+            if (this.paradaCercanaMarker) {
+                this.map.removeLayer(this.paradaCercanaMarker);
+            }
+
+            const icono = L.icon({
+                iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+                iconSize: [40, 40]
+            });
+
+            this.paradaCercanaMarker = L.marker(
+                [paradaMasCercana.latitud, paradaMasCercana.longitud],
+                { icon: icono }
+            ).addTo(this.map);
+
+            this.paradaCercanaMarker.bindPopup(
+                `🛑 <b>Parada más cercana</b><br>${paradaMasCercana.nombre}<br>📏 ${distanciaMinima.toFixed(0)} metros`
+            ).openPopup();
+        },
+
+        animarBus(marker, ruta, bus) {
+            const puntos = ruta.puntos.map(p => L.latLng(p[0], p[1]));
+            let i = 0;
+
+            const moverAlSiguiente = () => {
+                if (!this.map || !this.mapaActivo) return;
+
+                const actual = puntos[i];
+                const siguiente = puntos[(i + 1) % puntos.length];
+
+                const cercaDeParada = this.paradas.some(p => {
+                    const distancia = this.map.distance(actual, L.latLng(p.latitud, p.longitud));
+                    return distancia < 80;
+                });
+
+                bus.estado = cercaDeParada ? "En parada 🛑" : "En movimiento 🚌";
+
+                if (this.busSeleccionado && this.busSeleccionado.id === bus.id) {
+                    this.estadoDeLosBuses = bus.estado;
+                }
+
+                const angulo = Math.atan2(
+                    siguiente.lng - actual.lng,
+                    siguiente.lat - actual.lat
+                ) * (180 / Math.PI);
+
+                marker.setLatLng(siguiente);
+
+                if (marker.setRotationAngle) {
+                    marker.setRotationAngle(angulo);
+                }
+
+                i = (i + 1) % puntos.length;
+            };
+
+            const intervalo = setInterval(moverAlSiguiente, 1500);
+            this.intervalosBuses.push(intervalo);
+        },
+
+        buscarRuta() {
+            if (!this.filtroRuta) return;
+
+            const texto = this.filtroRuta.toUpperCase();
+            const busEncontrado = this.busesMarkers.find(b =>
+                b.bus.nombre_ruta.toUpperCase().includes(texto)
+            );
+
+            if (!busEncontrado) return;
+
+            this.map.setView(busEncontrado.marker.getLatLng(), 16, { animate: true });
+            busEncontrado.marker.openPopup();
+            this.busSeleccionado = busEncontrado.bus;
+        },
+
+        cerrarPanel() {
+            this.busSeleccionado = null;
+            if (this.rutaActiva) {
+                this.rutaActiva.remove();
+                this.rutaActiva = null;
+            }
+        },
+
+        guardarRuta() {
+            if (!this.busSeleccionado) return;
+
+            const nombreRuta = prompt("📝 Ponle un nombre a esta ruta:");
+            if (!nombreRuta || nombreRuta.trim() === "") return;
+
+            const rutasGuardadas = JSON.parse(localStorage.getItem('rutasMasUsadas')) || [];
+
+            const nuevaRuta = {
+                id: Date.now(),
+                nombreRuta: nombreRuta.trim(),
+                rutaBus: this.busSeleccionado.nombre_ruta,
+                placa: this.busSeleccionado.placa,
+                conductor: this.busSeleccionado.conductor,
+                capacidad: this.busSeleccionado.capacidad
+            };
+
+            rutasGuardadas.push(nuevaRuta);
+            localStorage.setItem('rutasMasUsadas', JSON.stringify(rutasGuardadas));
+            alert("✅ Ruta guardada como: " + nuevaRuta.nombreRuta);
         }
-
-        if (!this.map) return;
-
-        // Definimos el color fijo directamente aquí
-        const colorRuta = "#1387d4"; 
-
-        this.rutaActiva = L.Routing.control({
-          waypoints: coordenadas,
-          router: L.Routing.osrmv1({
-            serviceUrl: "https://router.project-osrm.org/route/v1"
-          }),
-          addWaypoints: false,
-          draggableWaypoints: false,
-          show: false,
-          createMarker: () => null,
-          lineOptions: {
-            styles: [{ color: colorRuta, weight: 6, opacity: 0.95 }]
-          }
-        }).addTo(this.map);
-
-        this.rutaActiva.on('routingerror', () => { });
-      },
-
-      buscarBusMasCercano() {
-        if (!this.usuarioUbicacion) return;
-
-        let busMasCercano = null;
-        let distanciaMinima = Infinity;
-
-        this.busesMarkers.forEach(b => {
-          const distancia = this.map.distance(
-            this.usuarioUbicacion,
-            b.marker.getLatLng()
-          );
-          if (distancia < distanciaMinima) {
-            distanciaMinima = distancia;
-            busMasCercano = b;
-          }
-        });
-
-        if (!busMasCercano) return;
-
-        const distanciaKm = (distanciaMinima / 1000).toFixed(2);
-        busMasCercano.marker.bindPopup(
-          `🚍 Bus ${busMasCercano.bus.ruta}<br>📏 ${distanciaKm} km`
-        ).openPopup();
-      },
-
-      buscarParadaMasCercana() {
-        if (!this.usuarioUbicacion) return;
-
-        let paradaMasCercana = null;
-        let distanciaMinima = Infinity;
-
-        paradas.forEach(parada => {
-          const distancia = this.map.distance(
-            this.usuarioUbicacion,
-            parada.coord
-          );
-          if (distancia < distanciaMinima) {
-            distanciaMinima = distancia;
-            paradaMasCercana = parada;
-          }
-        });
-
-        if (!paradaMasCercana) return;
-
-        if (this.paradaCercanaMarker) {
-          this.map.removeLayer(this.paradaCercanaMarker);
-        }
-
-        const icono = L.icon({
-          iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-          iconSize: [40, 40]
-        });
-
-        this.paradaCercanaMarker = L.marker(
-          paradaMasCercana.coord,
-          { icon: icono }
-        ).addTo(this.map);
-
-        const distancia = distanciaMinima.toFixed(0);
-        this.paradaCercanaMarker.bindPopup(
-          `🛑 <b>Parada más cercana</b><br>
-          ${paradaMasCercana.nombre}<br>
-          📏 ${distancia} metros`
-        ).openPopup();
-      },
-
-      animarBus(marker, ruta, bus) {
-        const puntos = ruta.puntos.map(p => L.latLng(p[0], p[1]));
-        let i = 0;
-
-        const moverAlSiguiente = () => {
-          if (!this.map || !this.mapaActivo) return;
-
-          const actual = puntos[i];
-          const siguiente = puntos[(i + 1) % puntos.length];
-
-          const cercaDeParada = paradas.some(p => {
-            const distancia = this.map.distance(actual, L.latLng(p.coord[0], p.coord[1]));
-            return distancia < 80;
-          });
-
-          bus.estado = cercaDeParada ? "En parada 🛑" : "En movimiento 🚌";
-
-          if (this.busSeleccionado && this.busSeleccionado.id === bus.id) {
-            this.estadoDeLosBuses = bus.estado;
-          }
-
-          const angulo = Math.atan2(
-            siguiente.lng - actual.lng,
-            siguiente.lat - actual.lat
-          ) * (180 / Math.PI);
-
-          marker.setLatLng(siguiente);
-
-          if (marker.setRotationAngle) {
-            marker.setRotationAngle(angulo);
-          }
-
-          i = (i + 1) % puntos.length;
-        };
-
-        const intervalo = setInterval(moverAlSiguiente, 1500);
-        this.intervalosBuses.push(intervalo);
-      },
-
-      buscarRuta() {
-        if (!this.filtroRuta) return;
-
-        const texto = this.filtroRuta.toUpperCase();
-        const busEncontrado = this.busesMarkers.find(b =>
-          b.bus.ruta.toUpperCase().includes(texto)
-        );
-
-        if (!busEncontrado) return;
-
-        this.map.setView(busEncontrado.marker.getLatLng(), 16, { animate: true });
-        busEncontrado.marker.openPopup();
-        this.busSeleccionado = busEncontrado.bus;
-      },
-
-      cerrarPanel() {
-        this.busSeleccionado = null;
-
-        if (this.rutaActiva) {
-          this.rutaActiva.remove();
-          this.rutaActiva = null;
-        }
-      },
-
-      guardarRuta() {
-        if (!this.busSeleccionado) return;
-
-        const nombreRuta = prompt("📝 Ponle un nombre a esta ruta (ej: Al trabajo, A la universidad):");
-        if (!nombreRuta || nombreRuta.trim() === "") return;
-
-        const rutasGuardadas = JSON.parse(localStorage.getItem('rutasMasUsadas')) || [];
-
-        const nuevaRuta = {
-          id: Date.now(),
-          nombreRuta: nombreRuta.trim(),
-          rutaBus: this.busSeleccionado.ruta,
-          placa: this.busSeleccionado.placa,
-          conductor: this.busSeleccionado.conductor,
-          capacidad: this.busSeleccionado.capacidad
-        };
-
-        rutasGuardadas.push(nuevaRuta);
-        localStorage.setItem('rutasMasUsadas', JSON.stringify(rutasGuardadas));
-        alert("✅ Ruta guardada correctamente como: " + nuevaRuta.nombreRuta);
-      }
     },
 
     beforeUnmount() {
-      this.mapaActivo = false;
-      this.intervalosBuses.forEach(i => clearInterval(i));
-      this.intervalosBuses = [];
+        this.mapaActivo = false;
+        this.intervalosBuses.forEach(i => clearInterval(i));
+        this.intervalosBuses = [];
 
-      if (this.map) {
-        this.map.stop();
+        if (this.map) {
+            this.map.stop();
 
-        if (this.rutaActiva) {
-          this.rutaActiva.off();
-          try {
-            this.rutaActiva.remove();
-          } catch (e) {
-            // Error silencioso
-          }
-          this.rutaActiva = null;
+            if (this.rutaActiva) {
+                this.rutaActiva.off();
+                try { this.rutaActiva.remove(); } catch (e) { /* ignorar */ }
+                this.rutaActiva = null;
+            }
+
+            this.busesMarkers.forEach(b => {
+                b.marker.off();
+                this.map.removeLayer(b.marker);
+            });
+            this.busesMarkers = [];
+
+            if (this.paradaCercanaMarker) {
+                this.map.removeLayer(this.paradaCercanaMarker);
+                this.paradaCercanaMarker = null;
+            }
+
+            this.map.off();
+            this.map.remove();
+            this.map = null;
         }
-
-        this.busesMarkers.forEach(b => {
-          b.marker.off();
-          this.map.removeLayer(b.marker);
-        });
-        this.busesMarkers = [];
-
-        if (this.paradaCercanaMarker) {
-          this.map.removeLayer(this.paradaCercanaMarker);
-          this.paradaCercanaMarker = null;
-        }
-
-        this.map.off();
-        this.map.remove();
-        this.map = null;
-      }
     }
-  }
+}
 </script>
 
 <style scoped>

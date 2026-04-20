@@ -31,16 +31,19 @@
   </div>
 </template>
 
-<script >
-import { buses } from "@/data/buses.js";
-
-export default{
-    data(){
-        return{
-            almacenarBusesActivos: buses
+<script>
+export default {
+    data() {
+        return {
+            almacenarBusesActivos: []
         }
-    }
+    },
 
+    async mounted() {
+        const respuesta = await fetch('http://localhost:3000/buses')
+        const datos = await respuesta.json()
+        this.almacenarBusesActivos = datos
+    }
 }
 </script>
 
