@@ -38,4 +38,24 @@ router.post('/login', (req, res) => {
     })
 })
 
+router.post('/recuperar', (req, res) => {
+    const { usuario, nuevaContrasena } = req.body
+    if (!usuario || !nuevaContrasena) {
+        return res.status(400).json({ error: 'Datos incompletos' })
+    }
+    const sqlBuscar = 'SELECT * FROM usuarios WHERE usuario = ?'
+    conexion.query(sqlBuscar, [usuario], (error, resultados) => {
+        if (error) return res.status(500).json({ error: 'Error en el servidor' })
+        if (resultados.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' })
+        }
+        const hash = bcrypt.hashSync(nuevaContrasena, 10)
+        const sqlActualizar = 'UPDATE usuarios SET contrasena = ? WHERE usuario = ?'
+        conexion.query(sqlActualizar, [hash, usuario], (err) => {
+            if (err) return res.status(500).json({ error: 'Error al actualizar' })
+            res.json({ mensaje: 'Contraseña actualizada correctamente' })
+        })
+    })
+})
+
 module.exports = router

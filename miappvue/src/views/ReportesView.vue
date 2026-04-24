@@ -7,20 +7,23 @@
     </button>
     <h1>Reportes</h1>
   </header>
-  
 
-<main class="reportes-lista"> <div class="tarjeta-reporte" v-for="reporte in listaReportes" :key="reporte">
-        <div class="reporte-contenedor-datos">
-            <span class="nombre-usuario">{{ usuarioMostrar }}</span>
-        </div>
-        <p class="reporte-texto">{{ reporte }}</p>
+  <main class="reportes-lista">
+    <TarjetaReporte
+      v-for="reporte in listaReportes"
+      :key="reporte.id"
+      :reporte="reporte"
+    />
+
+    <div v-if="listaReportes.length === 0" class="sin-reportes">
+      <p>No hay reportes aún. ¡Sé el primero!</p>
     </div>
-</main>
+  </main>
 
   <section class="reportes-input-contenedor">
     <div class="input-reporte">
-        <input type="text" placeholder="Envía tus reportes aquí..." v-model="almacenarReporte">
-        <button class="boton-enviar"  v-on:click="guardarReporte">
+      <input type="text" placeholder="Envía tus reportes aquí..." v-model="almacenarReporte">
+      <button class="boton-enviar" v-on:click="guardarReporte">
         <i class='bx bx-send'></i>
       </button>
     </div>
@@ -30,47 +33,65 @@
 </template>
 
 <script>
+import TarjetaReporte from '../components/TarjetaReporte.vue'
 
-export default{
-    data(){
-        return{
+export default {
+    components: {
+        TarjetaReporte
+    },
+
+    data() {
+        return {
             almacenarReporte: "",
             listaReportes: [],
-            usuarioMostrar: localStorage.getItem("usuarioNuevo", this.nuevo_usuario)
+            usuarioMostrar: localStorage.getItem("UsuarioLogueado")
         }
     },
-    mounted(){
-        const guardarDatos = localStorage.getItem('mis_reportes')
-        if (guardarDatos){
-            this.listaReportes = JSON.parse(guardarDatos);
-        }
+
+    async mounted() {
+        await this.cargarReportes()
     },
+
     methods: {
-        VolverBoton: function(){
+        VolverBoton: function () {
             this.$router.push("/mapa")
         },
-        guardarReporte: function(){
-            if (this.almacenarReporte !== ""){
-                this.listaReportes.push(this.almacenarReporte);
-                localStorage.setItem('mis_reportes', JSON.stringify(this.listaReportes));
-                this.almacenarReporte="";
 
-            setTimeout(() => {
-            this.listaReportes.shift();
-            localStorage.setItem('mis_reportes', JSON.stringify(this.listaReportes));
-            }, 60000);
-        }
-            else{
+        async cargarReportes() {
+            try {
+                const respuesta = await fetch('http://localhost:3000/reportes')
+                this.listaReportes = await respuesta.json()
+            } catch {
+                console.log('Error al cargar reportes')
+            }
+        },
+
+        async guardarReporte() {
+            if (this.almacenarReporte === "") {
                 alert("Llene el reporte correctamente")
+                return
+            }
+            try {
+                await fetch('http://localhost:3000/reportes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        usuario: this.usuarioMostrar,
+                        mensaje: this.almacenarReporte
+                    })
+                })
+                this.almacenarReporte = ""
+                await this.cargarReportes()
+            } catch {
+                alert("Error al enviar el reporte")
             }
         }
-    }  
+    }
 }
-
 </script>
 
 <style scoped>
-.reportes-view{
+.reportes-view {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -78,7 +99,7 @@ export default{
     font-family: "Segoe UI", sans-serif;
 }
 
-.reportes-header{
+.reportes-header {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -87,12 +108,12 @@ export default{
     padding: 15px 25px;
 }
 
-.reportes-header h1{
+.reportes-header h1 {
     font-size: 22px;
     font-weight: 700;
 }
 
-.boton-volver{
+.boton-volver {
     background: rgba(255, 255, 255, 0.15);
     border: none;
     color: white;
@@ -105,11 +126,11 @@ export default{
     transition: 0.2s;
 }
 
-.boton-volver:hover{
+.boton-volver:hover {
     background: rgba(255, 255, 255, 0.25);
 }
 
-.reportes-lista{
+.reportes-lista {
     flex: 1;
     overflow-y: auto;
     padding: 20px 25px;
@@ -118,41 +139,26 @@ export default{
     gap: 12px;
 }
 
-.tarjeta-reporte{
-    background: white;
-    border-radius: 12px;
-    padding: 14px 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border-left: 4px solid #2563eb;
-}
-
-.nombre-usuario{
-    font-weight: 700;
-    color: #1e3a8a;
-    font-size: 13px;
-    display: block;
-    margin-bottom: 6px;
-}
-
-.reporte-texto{
-    color: black;
+.sin-reportes {
+    text-align: center;
+    color: #94a3b8;
+    margin-top: 40px;
     font-size: 15px;
-    line-height: 1.5;
 }
 
-.reportes-input-contenedor{
+.reportes-input-contenedor {
     padding: 15px 25px;
     background: white;
     border-top: 1px solid #e2e8f0;
 }
 
-.input-reporte{
+.input-reporte {
     display: flex;
     gap: 10px;
     align-items: center;
 }
 
-.input-reporte input{
+.input-reporte input {
     flex: 1;
     padding: 12px 15px;
     border: 1px solid #cbd5e1;
@@ -165,11 +171,11 @@ export default{
     color: black;
 }
 
-.input-reporte input:focus{
+.input-reporte input:focus {
     border: 2px solid #00c8fa;
 }
 
-.boton-enviar{
+.boton-enviar {
     background: #2563eb;
     color: white;
     border: none;
@@ -182,7 +188,7 @@ export default{
     transition: 0.2s;
 }
 
-.boton-enviar:hover{
+.boton-enviar:hover {
     background: #1e40af;
 }
 </style>

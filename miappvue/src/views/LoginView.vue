@@ -34,7 +34,7 @@
             id="contrasena" 
             v-model="validar_contrasena"
           >
-          <a href="#" class="olvido-pass">¿Olvidaste la contraseña?</a>
+          <a class="olvido-pass" @click="abrirRecuperar">¿Olvidaste la contraseña?</a>
         </div>
       </div>
 
@@ -50,6 +50,20 @@
         </button>
       </div>
     </div>
+
+    <!-- Modal recuperar contraseña -->
+    <div v-if="mostrarRecuperar" class="modal-fondo">
+      <div class="modal-caja">
+        <h3>🔑 Recuperar contraseña</h3>
+        <p class="modal-desc">Ingresa tu usuario y tu nueva contraseña</p>
+        <input type="text" placeholder="Tu usuario" class="input-moderno" v-model="rec_usuario">
+        <input type="password" placeholder="Nueva contraseña" class="input-moderno" v-model="rec_nueva">
+        <input type="password" placeholder="Confirmar contraseña" class="input-moderno" v-model="rec_confirmar">
+        <button class="btn-login-principal" @click="recuperarContrasena">Cambiar contraseña</button>
+        <button class="btn-secundario-glass" @click="mostrarRecuperar = false">Cancelar</button>
+      </div>
+    </div>
+
   </main>
 </template>
 
@@ -61,6 +75,10 @@ export default {
     return {
       validar_usuario: "",
       validar_contrasena: "",
+      mostrarRecuperar: false,
+      rec_usuario: "",
+      rec_nueva: "",
+      rec_confirmar: ""
     }
   },
 
@@ -126,6 +144,74 @@ export default {
 
     ResgistrarLogin() {
       this.$router.push('/registro')
+    },
+
+    abrirRecuperar() {
+      this.rec_usuario = ""
+      this.rec_nueva = ""
+      this.rec_confirmar = ""
+      this.mostrarRecuperar = true
+    },
+
+    async recuperarContrasena() {
+      if (!this.rec_usuario || !this.rec_nueva || !this.rec_confirmar) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Campos incompletos',
+          detail: 'Rellena todos los campos',
+          life: 3000
+        })
+        return
+      }
+
+      if (this.rec_nueva !== this.rec_confirmar) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Las contraseñas no coinciden',
+          life: 3000
+        })
+        return
+      }
+
+      try {
+        const respuesta = await fetch('http://localhost:3000/auth/recuperar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            usuario: this.rec_usuario,
+            nuevaContrasena: this.rec_nueva
+          })
+        })
+
+        const datos = await respuesta.json()
+
+        if (!respuesta.ok) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: datos.error,
+            life: 3000
+          })
+          return
+        }
+
+        this.$toast.add({
+          severity: 'success',
+          summary: '¡Listo!',
+          detail: 'Contraseña actualizada correctamente',
+          life: 3000
+        })
+        this.mostrarRecuperar = false
+
+      } catch {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo conectar con el servidor',
+          life: 3000
+        })
+      }
     }
   }
 }
@@ -143,7 +229,7 @@ export default {
 .pantalla-completa {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: #0b1120;
-  min-height: calc(100vh - 70px); /* Ajuste para que respete el header */
+  min-height: calc(100vh - 70px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -197,7 +283,7 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 20px; /* Reducido para ahorrar altura */
+  margin-bottom: 20px;
 }
 
 .logo-img {
@@ -233,7 +319,7 @@ h1 {
 .formulario-vertical {
   display: flex;
   flex-direction: column;
-  gap: 15px;                  /* menos espacio entre inputs */
+  gap: 15px;
   margin-bottom: 25px; 
 }
 
@@ -260,16 +346,21 @@ label {
 }
 
 .input-moderno:focus {
-  box-shadow: 0 0 0 4px  rgba(30, 122, 241, 0.671);
+  box-shadow: 0 0 0 4px rgba(30, 122, 241, 0.671);
 }
 
 .olvido-pass {
-  color:#4f96fa;
+  color: #4f96fa;
   font-size: 0.85rem;
   text-align: right;
   text-decoration: none;
   font-weight: 500;
   margin-top: 2px;
+  cursor: pointer;
+}
+
+.olvido-pass:hover {
+  text-decoration: underline;
 }
 
 .footer-acciones {
@@ -328,5 +419,43 @@ label {
 
 .btn-secundario-glass:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+/* Modal */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-caja {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: white;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.modal-caja h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.modal-desc {
+  color: #64748b;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 5px;
 }
 </style>
