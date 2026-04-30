@@ -1,7 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const conexion = require('../db')
+
+const SECRET = 'pronto_santa_marta_2026'
 
 router.post('/registro', (req, res) => {
     const { usuario, contrasena } = req.body
@@ -34,7 +37,8 @@ router.post('/login', (req, res) => {
         if (!contrasenaValida) {
             return res.status(400).json({ error: 'Contraseña incorrecta' })
         }
-        res.json({ mensaje: 'Login exitoso', usuario: usuarioDb.usuario })
+        const token = jwt.sign({ usuario: usuarioDb.usuario }, SECRET, { expiresIn: '8h' })
+        res.json({ mensaje: 'Login exitoso', usuario: usuarioDb.usuario, token })
     })
 })
 

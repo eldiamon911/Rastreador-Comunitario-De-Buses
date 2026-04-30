@@ -1,45 +1,45 @@
-  <template>
-  <div class="contenedor">
-    <div class="contenedor-titulo">
-      <span class="titulo1">Mapa en Tiempo Real</span>
+<template>
+    <div class="contenedor">
+        <div class="contenedor-titulo">
+            <span class="titulo1">Mapa en Tiempo Real</span>
+        </div>
+
+        <div class="buscador">
+            <input v-model="filtroRuta" @input="buscarRuta" placeholder="🔎 Buscar ruta (ej: SM101)" />
+            <button @click="irAMiUbicacion">📍 Mi ubicación</button>
+        </div>
+
+        <div class="stats">
+            <div class="mini-carta" v-on:click="mostrarBusesActivos">
+                <div class="icon">🚌</div>
+                <h2>{{ cantidadBuses }}</h2>
+                <p>Buses activos</p>
+            </div>
+
+            <div class="mini-carta" v-on:click="verRutasDisponibles">
+                <div class="icon">🗺</div>
+                <h2>{{ rutasDisponibles }}</h2>
+                <p>Rutas disponibles</p>
+            </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div v-if="busSeleccionado" class="panelBus">
+            <div class="contenedor-icono-reportes" v-on:click="irAReportes" v-show="confirmarSesionMapa">
+                <i class='bx bx-chat'></i>
+            </div>
+
+            <h2>🚌 Bus {{ busSeleccionado.ruta }}</h2>
+            <p><b>Conductor:</b> {{ busSeleccionado.conductor }}</p>
+            <p><b>Placa:</b> {{ busSeleccionado.placa }}</p>
+            <p><b>Capacidad:</b> {{ busSeleccionado.capacidad }} pasajeros</p>
+            <p><b>Estado:</b> {{ estadoDeLosBuses }}</p>
+
+            <button @click="cerrarPanel">Cerrar</button>
+            <button v-show="confirmarSesionMapa" v-on:click="guardarRuta">Guardar ruta</button>
+        </div>
     </div>
-
-    <div class="buscador">
-      <input v-model="filtroRuta" @input="buscarRuta" placeholder="🔎 Buscar ruta (ej: SM101)" />
-      <button @click="irAMiUbicacion">📍 Mi ubicación</button>
-    </div>
-
-    <div class="stats">
-      <div class="mini-carta" v-on:click="mostrarBusesActivos">
-        <div class="icon">🚌</div>
-        <h2>{{ cantidadBuses }}</h2>
-        <p>Buses activos</p>
-      </div>
-
-      <div class="mini-carta" v-on:click="verRutasDisponibles">
-        <div class="icon">🗺</div>
-        <h2>{{ rutasDisponibles }}</h2>
-        <p>Rutas disponibles</p>
-      </div>
-    </div>
-
-    <div id="map"></div>
-
-    <div v-if="busSeleccionado" class="panelBus">
-      <div class="contenedor-icono-reportes" v-on:click="irAReportes" v-show="confirmarSesionMapa">
-        <i class='bx bx-chat'></i>
-      </div>
-
-      <h2>🚌 Bus {{ busSeleccionado.ruta }}</h2>
-      <p><b>Conductor:</b> {{ busSeleccionado.conductor }}</p>
-      <p><b>Placa:</b> {{ busSeleccionado.placa }}</p>
-      <p><b>Capacidad:</b> {{ busSeleccionado.capacidad }} pasajeros</p>
-      <p><b>Estado:</b> {{ estadoDeLosBuses }}</p>
-
-      <button @click="cerrarPanel">Cerrar</button>
-      <button v-show="confirmarSesionMapa" v-on:click="guardarRuta">Guardar ruta</button>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -47,6 +47,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-rotatedmarker";
 import "leaflet-routing-machine";
+import { Icon } from "leaflet";
 
 export default {
     data() {
@@ -71,10 +72,13 @@ export default {
     },
 
     async mounted() {
+        const token = localStorage.getItem('token')
+        const headers = { 'Authorization': `Bearer ${token}` }
+
         const [resBuses, resRutas, resParadas] = await Promise.all([
-            fetch('http://localhost:3000/buses'),
-            fetch('http://localhost:3000/rutas'),
-            fetch('http://localhost:3000/paradas')
+            fetch('http://localhost:3000/buses', { headers }),
+            fetch('http://localhost:3000/rutas', { headers }),
+            fetch('http://localhost:3000/paradas', { headers })
         ])
         this.buses = await resBuses.json()
         this.rutas = await resRutas.json()
@@ -82,7 +86,7 @@ export default {
 
         // cargar puntos de cada ruta
         for (const ruta of this.rutas) {
-            const res = await fetch(`http://localhost:3000/rutas/${ruta.id}/puntos`)
+            const res = await fetch(`http://localhost:3000/rutas/${ruta.id}/puntos`, { headers })
             const puntos = await res.json()
             ruta.puntos = puntos.map(p => [p.latitud, p.longitud])
         }
@@ -90,7 +94,15 @@ export default {
         this.cantidadBuses = this.buses.length
         this.rutasDisponibles = this.rutas.length
 
-        this.iniciarMapa()
+        delete Icon.Default.prototype._getIconUrl
+        Icon.Default.mergeOptions({
+            iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+            iconUrl: require('leaflet/dist/images/marker-icon.png'),
+            shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+        })
+        this.$nextTick(() => {
+            this.iniciarMapa()
+        })
     },
 
     methods: {
@@ -377,193 +389,194 @@ export default {
 
 <style scoped>
 .contenedor {
-  background-color: #0b1120; 
-  min-height: 100vh; 
-  margin: 0;
-  padding: 30px; 
-  background-attachment: fixed;
-  font-family: 'Inter', sans-serif;
+    background-color: #0b1120;
+    min-height: 100vh;
+    margin: 0;
+    padding: 30px;
+    background-attachment: fixed;
+    font-family: 'Inter', sans-serif;
 }
 
 .contenedor-titulo {
-  display: flex;
-  justify-content: center; 
-  width: 100%;
-  margin-bottom: 45px; /* Espaciado con el buscador */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 45px;
+    /* Espaciado con el buscador */
 }
 
 .titulo1 {
-  background: rgba(3, 53, 119, 0.45);
-  color: #4f96fa;
-  padding: 8px 30px;
-  border-radius: 100px;
-  font-size: 1.5rem;
-  font-weight: bold;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  display: inline-block;
+    background: rgba(3, 53, 119, 0.45);
+    color: #4f96fa;
+    padding: 8px 30px;
+    border-radius: 100px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: inline-block;
 }
 
 /* Buscador */
 .buscador {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
 }
 
 .buscador input {
-  padding: 2px 18px;
-  border-radius: 18px;
-  border: none;
-  width: 340px;
-  background-color: white;
-  color: black;
-  font-size: 1rem;
+    padding: 2px 18px;
+    border-radius: 18px;
+    border: none;
+    width: 340px;
+    background-color: white;
+    color: black;
+    font-size: 1rem;
 }
 
 .buscador button {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 18px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 18px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
 .buscador button:hover {
-  background: #1e40af;
+    background: #1e40af;
 }
 
 /* Estadísticas */
 .stats {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
 .mini-carta {
-  width: 240px;
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  cursor: pointer;
+    width: 240px;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .mini-carta:hover {
-  transform: translateY(-5px);
+    transform: translateY(-5px);
 }
 
 .icon {
-  font-size: 32px;
-  margin-bottom: 5px;
+    font-size: 32px;
+    margin-bottom: 5px;
 }
 
 .mini-carta h2 {
-  font-size: 30px;
-  margin: 5px 0;
-  color: #2563eb;
+    font-size: 30px;
+    margin: 5px 0;
+    color: #2563eb;
 }
 
 .mini-carta p {
-  font-size: 14px;
-  color: #64748b;
-  margin: 0;
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
 }
 
 #map {
-  height: 520px;
-  width: 90%; 
-  margin: 0 auto 50px auto; 
-  border-radius: 20px;
-  overflow: hidden;
-  border: 3px solid #1e7eeb;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    height: 520px;
+    width: 90%;
+    margin: 0 auto 50px auto;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 3px solid #1e7eeb;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* Panel del Bus Flotante */
 .panelBus {
-  position: absolute;
-  top: 458px;
-  right: 108px;
-  width: 280px;
-  background: white;
-  padding: 25px;
-  border-radius: 18px;
-  border-top: 6px solid #2563eb;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  z-index: 1000;
+    position: absolute;
+    top: 458px;
+    right: 108px;
+    width: 280px;
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    border-top: 6px solid #2563eb;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
 }
 
 .panelBus h2 {
-  color: #1e3a8a;
-  margin-bottom: 12px;
-  font-size: 1.3rem;
+    color: #1e3a8a;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
 }
 
 .panelBus p {
-  color: #334155;
-  margin: 8px 0;
-  font-size: 14px;
+    color: #334155;
+    margin: 8px 0;
+    font-size: 14px;
 }
 
 .panelBus button {
-  width: 100%;
-  margin-top: 12px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+    width: 100%;
+    margin-top: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
 }
 
 .panelBus button:hover {
-  background: #1e40af;
+    background: #1e40af;
 }
 
 .panelBus button:last-child {
-  background: #facc15;
-  color: #1e293b;
+    background: #facc15;
+    color: #1e293b;
 }
 
 /* Icono de Reportes */
 .contenedor-icono-reportes {
-  position: absolute;
-  top: -12px;
-  right: -12px;
-  background: #2363eb;
-  color: white;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: #2363eb;
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
 }
 
 /* Leaflet y otros */
 :deep(.leaflet-routing-container) {
-  display: none !important;
+    display: none !important;
 }
 
 .leaflet-tooltip {
-  background: #1e40af !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 6px !important;
-  padding: 4px 10px !important;
+    background: #1e40af !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 4px 10px !important;
 }
 </style>

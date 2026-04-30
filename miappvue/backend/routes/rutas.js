@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const conexion = require('../db')
+const verificarToken = require('../middleware/verificarToken')
 
-router.get('/', (req, res) => {
+router.get('/', verificarToken, (req, res) => {
     const sql = 'SELECT * FROM rutas'
     conexion.query(sql, (error, resultados) => {
         if (error) return res.status(500).json({ error: 'Error al obtener rutas' })
@@ -10,7 +11,7 @@ router.get('/', (req, res) => {
     })
 })
 
-router.get('/:id/paradas', (req, res) => {
+router.get('/:id/paradas', verificarToken, (req, res) => {
     const sql = 'SELECT * FROM paradas WHERE id_ruta = ?'
     conexion.query(sql, [req.params.id], (error, resultados) => {
         if (error) return res.status(500).json({ error: 'Error al obtener paradas' })
@@ -18,7 +19,7 @@ router.get('/:id/paradas', (req, res) => {
     })
 })
 
-router.get('/:id/puntos', (req, res) => {
+router.get('/:id/puntos', verificarToken, (req, res) => {
     const sql = 'SELECT latitud, longitud, orden FROM ruta_puntos WHERE id_ruta = ? ORDER BY orden'
     conexion.query(sql, [req.params.id], (error, resultados) => {
         if (error) return res.status(500).json({ error: 'Error al obtener puntos' })

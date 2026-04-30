@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const conexion = require('../db')
+const verificarToken = require('../middleware/verificarToken')
 
-router.get('/', (req, res) => {
+router.get('/', verificarToken, (req, res) => {
     const sql = `
         SELECT b.*, r.codigo, r.nombre as nombre_ruta 
         FROM buses b 

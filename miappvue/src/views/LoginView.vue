@@ -120,6 +120,7 @@ export default {
 
         localStorage.setItem('SesionActiva', 'true')
         localStorage.setItem('UsuarioLogueado', datos.usuario)
+        localStorage.setItem('token', datos.token)
 
         this.$toast.add({
           severity: 'success',
