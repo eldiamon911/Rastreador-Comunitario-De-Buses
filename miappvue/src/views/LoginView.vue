@@ -86,6 +86,10 @@ export default {
     async ValidarLogin() {
       this.$toast.removeAllGroups()
 
+      localStorage.removeItem('SesionActiva')
+      localStorage.removeItem('UsuarioLogueado')
+      localStorage.removeItem('token')
+
       if (!this.validar_usuario || !this.validar_contrasena) {
         this.$toast.add({
           severity: 'warn',
@@ -118,9 +122,13 @@ export default {
           return
         }
 
-        localStorage.setItem('SesionActiva', 'true')
-        localStorage.setItem('UsuarioLogueado', datos.usuario)
-        localStorage.setItem('token', datos.token)
+        if (datos.token) {
+          localStorage.setItem('SesionActiva', 'true')
+          localStorage.setItem('UsuarioLogueado', datos.usuario)
+          localStorage.setItem('token', datos.token)
+        }else {
+          console.error("El servidor no proporcionó un token de autenticación.")
+        }
 
         this.$toast.add({
           severity: 'success',
